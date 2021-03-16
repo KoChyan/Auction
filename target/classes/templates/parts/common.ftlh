@@ -31,11 +31,13 @@
             integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
             crossorigin="anonymous"></script>
     <!--My scripts -->
-    <script>
+    <script type="text/javascript">
         function fillHiddenDateField() {
             let date = document.getElementById('date').value;
             document.getElementById('hiddenDate').value = new Date(date).toUTCString();
         }
+    </script>
+
     </script>
     </body>
     </html>

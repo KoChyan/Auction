@@ -14,7 +14,7 @@
                 <a class="nav-link" href="/main">Main</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/lot">создать лот</a>
+                <a class="nav-link" href="/lot/add">создать лот</a>
             </li>
             <#if isUser>
                 <li class="nav-item">
@@ -33,12 +33,12 @@
             <div class="mx-auto">
                 <form method="get" class="form-inline my-2 my-lg-0" action="/main">
                     <input type="text" name="filter" class="form-control mr-sm-2 " placeholder="filter"/>
-                    <button type="submit" class="btn btn-outline-secondary">Найти</button>
+                    <button type="submit" class="btn btn-outline-secondary my-2">Найти</button>
                 </form>
             </div>
         <#if isUser>
-            <div class=".navbar-text ml-3 mr-3 my-1"> ${name}</div>
-            <div class=".navbar-text"><#include "logout.ftlh"></div>
+            <div class=".navbar-text ml-3 mr-3 my-2"> ${name}</div>
+            <div class=".navbar-text my-2"><#include "logout.ftlh"></div>
             <#else>
         </#if>
     </div>

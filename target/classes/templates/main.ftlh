@@ -1,14 +1,14 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
 
-    <div class="card-columns display: inline-block">
+    <div class="card-columns c">
         <#list lots as lot>
-            <div class="card my-5 border-secondary mb-3 ">
+            <div class="card m-4" style="max-width:18rem">
                 <div class="card-header text-center">
-                    <span class="align-middle">Лот: ${lot.getName()?ifExists}</span>
+                    <span>Лот: ${lot.getName()?ifExists}</span>
                 </div>
                 <#if lot.filename??>
-                    <img src="/img/${lot.filename}" class="card-img-top img-fluid" alt="">
+                    <div id="imgContainer"><img src="/img/resized/${lot.filename}" class="card-img-top" alt=""></div>
                 </#if>
                 <div class="card-body m-1">
                     <div class="d-grid gap-2">
@@ -23,11 +23,13 @@
 
                         <b>текущая ставка: ${lot.getFinalRate()?ifExists}</b><br>
                     </div>
+                    <a href="/lot/${lot.getId()}" class="card-link mx-2 my-5">Сделать ставку</a>
                 </div>
                 <div class="card-footer text-center">
-                    <span class="align-middle ">Создатель лота: ${lot.getCreator().getUsername()?ifExists}</span>
+                    <span>Разместил: ${lot.getCreator().getUsername()?ifExists}</span>
                 </div>
             </div>
         </#list>
     </div>
+
 </@c.page>

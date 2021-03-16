@@ -5,22 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.User;
-import ru.koChyan.Auction.repos.LotRepo;
+import ru.koChyan.Auction.service.LotService;
+import ru.koChyan.Auction.service.PricingService;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/lot")
@@ -28,14 +20,16 @@ public class LotController {
     @Value("${upload.path}")
     private String uploadPath;
 
-    private final LotRepo lotRepo;
+    private final LotService lotService;
+    private final PricingService pricingService;
 
     @Autowired
-    public LotController(LotRepo lotRepo) {
-        this.lotRepo = lotRepo;
+    public LotController(LotService lotService, PricingService pricingService) {
+        this.lotService = lotService;
+        this.pricingService = pricingService;
     }
 
-    @GetMapping()
+    @GetMapping("/add")
     public String lotForm(Model model) {
         return "creatingLot";
     }
@@ -48,45 +42,20 @@ public class LotController {
             @RequestParam(name = "initialRate") Double initialRate,
             @RequestParam(name = "startDate") String startDate,
             @RequestParam(name = "timeStep") Double timeStep,
-            @RequestParam(name = "file") MultipartFile file,
-            Model model
-    ) throws IOException, ParseException {
-        Lot lot = new Lot();
-
-        lot.setStartTime(new Date(startDate));
-        lot.setTimeStep(timeStep);
-        lot.setStatus("");
-        lot.setCreator(user);
-        lot.setName(name);
-        lot.setDescription(description);
-        lot.setInitialRate(initialRate);
-        lot.setFinalRate(initialRate);
-
-        //если из формы был получен файл
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath);
-
-            //если директория отсутствует
-            if (uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            //Чтобы избежать коллизии имен файлов, сгенерируем рандомный UUID
-            String uuidFile = UUID.randomUUID().toString();
-
-            //объединим uuid и название файла
-            String resultFilename = uuidFile + "." + file.getOriginalFilename();
-
-            //сохраним файл по указанному пути
-            file.transferTo(new File(uploadPath + "/" + resultFilename));
-
-            //обновим значение поля filename на новое уникальное имя
-            lot.setFilename(resultFilename);
-
-        }
-
-        lotRepo.save(lot);
+            @RequestParam(name = "file") MultipartFile file
+    ) throws IOException {
+        lotService.addLot(user, name, description, initialRate, startDate, timeStep, file);
 
         return "redirect:/main";
+    }
+
+    @GetMapping("/{lot}")
+    public String bettingPage(
+            @PathVariable Lot lot,
+            Model model
+    ) {
+        model.addAttribute("lot", lot);
+        model.addAttribute("pricing", pricingService.findLastThreeByLotId(lot.getId()));
+        return "lotBet";
     }
 }
