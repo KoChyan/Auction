@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.koChyan.Auction.domain.Role;
 import ru.koChyan.Auction.domain.User;
@@ -15,19 +16,26 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
-
-    private final UserRepo userRepo;
-    private final MailSender mailSender;
+    @Autowired
+    private UserRepo userRepo;
 
     @Autowired
-    public UserService(UserRepo userRepo, MailSender mailSender) {
-        this.userRepo = userRepo;
-        this.mailSender = mailSender;
-    }
+    private MailSender mailSender;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return userRepo.findByUsername(s);
+        User user =  userRepo.findByUsername(s);
+
+        if(user == null)
+            throw new UsernameNotFoundException("Такой пользователь не найден");
+
+            return user;
     }
 
     public boolean addUser(User user) {
@@ -47,8 +55,11 @@ public class UserService implements UserDetailsService {
         //иначе создаем пользователя
         user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
-        user.setBalance(0.0);
+        user.setBalance(0L);
         user.setActivationCode(UUID.randomUUID().toString());
+
+        //шифруем пароль
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepo.save(user);
         //Если у пользователя есть почта и она не состоит из пробелов
@@ -60,6 +71,7 @@ public class UserService implements UserDetailsService {
 
     private void sendMessage(User user) {
         if (!StringUtils.isEmptyOrWhitespaceOnly(user.getEmail())) {
+
             String message = String.format(
                     "Здравствуйте, %s! \n" +
                             "Добро пожаловать на аукцион Ambey.\n" +
@@ -95,7 +107,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public void saveUser(User user, String username, Map<String, String> form, Double balance) {
+    public void saveUser(User user, String username, Map<String, String> form, Long balance) {
         user.setUsername(username);
         user.setBalance(balance);
         //помещаем в Set все существующие роли
@@ -116,7 +128,6 @@ public class UserService implements UserDetailsService {
 
     public void updateProfile(User user, String password, String email) {
         String userEmail = user.getEmail();
-        System.out.println(password + "    " + email);
 
         //проверяем старую и новую почту на равенство null и друг другу
         boolean isEmailChanged = (email != null && !email.equals(userEmail) ||
@@ -143,7 +154,7 @@ public class UserService implements UserDetailsService {
 
         //если пользователь установил новый непустой пароль, то устанавливаем его
         if (!StringUtils.isEmptyOrWhitespaceOnly(password)) {
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
         }
         userRepo.save(user);
 

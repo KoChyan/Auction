@@ -14,17 +14,17 @@ public class Pricing {
     @JoinColumn(name = "lot_id")
     private Lot lot;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
     private Date date;
-    private Double bet;
+    private Long bet;
 
     public Pricing() {
     }
 
-    public Pricing(Lot lot, User user, Date dateTime, Double bet) {
+    public Pricing(Lot lot, User user, Date dateTime, Long bet) {
         this.lot = lot;
         this.user = user;
         this.date = dateTime;
@@ -63,11 +63,12 @@ public class Pricing {
         this.date = dateTime;
     }
 
-    public Double getBet() {
+    public Long getBet() {
         return bet;
     }
 
-    public void setBet(Double bet) {
+    public void setBet(Long bet) {
         this.bet = bet;
     }
+
 }

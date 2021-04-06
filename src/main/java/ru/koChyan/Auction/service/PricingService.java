@@ -13,25 +13,32 @@ import java.util.List;
 @Service
 public class PricingService {
 
-    private final PricingRepo pricingRepo;
-
     @Autowired
-    public PricingService(PricingRepo pricingRepo) {
-        this.pricingRepo = pricingRepo;
-    }
+    private PricingRepo pricingRepo;
 
-    public void addPrice(User user, Lot lot, Date date){
+    public void addPrice(User user, Lot lot){
         Pricing pricing = new Pricing();
 
         pricing.setUser(user);
-        pricing.setDate(date);
+        pricing.setDate(lot.getStartTime());
         pricing.setLot(lot);
-        pricing.setBet(lot.getFinalRate());
+        pricing.setBet(lot.getInitialBet());
 
         pricingRepo.save(pricing);
     }
 
     public List<Pricing> findLastThreeByLotId(Long id) {
         return pricingRepo.findLastThreeByLotId(id);
+    }
+
+    public void addPrice(User user, Lot lot, Long bet, Date date) {
+        Pricing pricing = new Pricing();
+
+        pricing.setUser(user);
+        pricing.setDate(date);
+        pricing.setLot(lot);
+        pricing.setBet(bet);
+
+        pricingRepo.save(pricing);
     }
 }

@@ -1,0 +1,32 @@
+
+.card-img-top {
+    max-width: 300px;
+    max-height: 300px;
+}
+
+.navbar{
+
+}
+
+.card-header {
+    height: 70px;
+    font-weight: bold;
+}
+
+.card-footer {
+    height: 70px;
+}
+
+.btn-group{
+    width: 100%;
+}
+
+#btnGroup{
+    width: 50%;
+}
+
+#lotCol{
+    max-width: 25rem;
+    min-width: 20rem;
+}
+

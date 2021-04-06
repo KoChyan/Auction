@@ -1,9 +1,12 @@
 package ru.koChyan.Auction.domain;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
 
@@ -15,12 +18,22 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "Обязательное поле")
+    @Length(max = 16, message = "Имя пользователя не может иметь более 16 символов")
     private String username;
-    private String password;
-    private Boolean active;
-    private Double balance;
 
+    @NotBlank(message = "Обязательное поле")
+    @Length(min = 4, max = 12, message = "Необходимо ввести от 4 до 12 символов")
+    private String password;
+
+    private Boolean active;
+
+    private Long balance;
+
+    @NotBlank(message = "Обязательное поле")
+    @Email(message = "Невалидный email")
     private String email;
+
     private String activationCode;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -79,11 +92,11 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public Double getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
     }
 
@@ -135,4 +148,5 @@ public class User implements UserDetails {
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
     }
+
 }

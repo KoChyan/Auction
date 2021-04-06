@@ -1,6 +1,9 @@
 package ru.koChyan.Auction.domain;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Date;
 
 @Entity
@@ -11,23 +14,42 @@ public class Lot {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User creator;
+
+    @NotBlank(message = "Обязательное поле")
+    @Length(max = 64, message = "Слишком длинное название")
     private String name;
+
+    @NotBlank(message = "Обязательное поле")
+    @Length(max = 2048, message = "Слишком длинное описание")
     private String description;
+
+    @NotNull(message = "Обязательное поле")
+    @Future(message = "Дата не может быть текущим или прошлым моментом")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startTime;
+
+    private Date endTime;
+
+    @NotNull(message = "Обязательное поле")
+    @Min(value = 5, message = "Значение не может быть меньше 5")
+    @Max(value = 600, message = "Значение не может быть больше 600")
+    private Integer timeStep;
+
+    @NotNull(message = "Обязательное поле")
+    @Min(value = 1, message = "Значение не может быть меньше 1")
+    @Max(value = 900000000, message = "Значение не может быть больше 900000000")
+    private Long initialBet;
+
+    private Long finalBet;
 
     //название файла(фотографии)
     private String filename;
 
-    private Date startTime;
-    private Date endTime;
-
-    private Double initialRate;
-    private Double finalRate;
-    private Double timeStep;
     private String status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User creator;
 
 
     public Lot() {
@@ -81,20 +103,20 @@ public class Lot {
         this.endTime = endTime;
     }
 
-    public Double getInitialRate() {
-        return initialRate;
+    public Long getInitialBet() {
+        return initialBet;
     }
 
-    public void setInitialRate(Double initialRate) {
-        this.initialRate = initialRate;
+    public void setInitialBet(Long initialBet) {
+        this.initialBet = initialBet;
     }
 
-    public Double getFinalRate() {
-        return finalRate;
+    public Long getFinalBet() {
+        return finalBet;
     }
 
-    public void setFinalRate(Double finalRate) {
-        this.finalRate = finalRate;
+    public void setFinalBet(Long finalBet) {
+        this.finalBet = finalBet;
     }
 
     public String getStatus() {
@@ -113,11 +135,11 @@ public class Lot {
         this.creator = creator;
     }
 
-    public Double getTimeStep() {
+    public Integer getTimeStep() {
         return timeStep;
     }
 
-    public void setTimeStep(Double timeStep) {
+    public void setTimeStep(Integer timeStep) {
         this.timeStep = timeStep;
     }
 }

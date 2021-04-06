@@ -4,30 +4,55 @@
         ${message?ifExists}
     </div>
     <form method="post" action="/registration">
-        <div class="form-group row">
+        <div class="form-group row my-3">
             <label class="col-sm-2 col-form-label">Email</label>
             <div class="col-sm-5">
-                <input type="email" class="form-control" placeholder="example@gmail.com" name="email"/>
+                <input type="text" class="form-control  ${(emailError??)?string('is-invalid', '')}"
+                       placeholder="example@gmail.com" value="<#if user??>${user.getEmail()!''}</#if>"
+                       name="email"/>
+                <#if emailError??>
+                    <#list emailError as eErr >
+                        <div class="invalid-feedback">
+                            ${eErr}
+                        </div>
+                    </#list>
+                </#if>
             </div>
         </div>
 
-        <div class="form-group row">
+        <div class="form-group row my-3">
             <label for="inputUsername" class="col-sm-2 col-form-label">User name</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" id="inputUsername" placeholder="Enter username"
+                <input type="text" class="form-control ${(usernameError??)?string('is-invalid', '')}" id="inputUsername"
+                       placeholder="Enter username" value="<#if user??>${user.getUsername()!''}</#if>"
                        name="username"/>
+                <#if usernameError??>
+                    <#list usernameError as uErr >
+                        <div class="invalid-feedback">
+                            ${uErr}
+                        </div>
+                    </#list>
+                </#if>
             </div>
         </div>
-
-        <div class="form-group row">
+        <div class="form-group row my-3">
             <label class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-5">
-                <input type="password" class="form-control" placeholder="Enter password" name="password"/>
+                <input type="password" class="form-control ${(passwordError??)?string('is-invalid', '')}"
+                       placeholder="Enter password"
+                       name="password"/>
+                <#if passwordError??>
+                    <#list passwordError as pErr >
+                        <div class="invalid-feedback">
+                            ${pErr}
+                        </div>
+                    </#list>
+                </#if>
             </div>
         </div>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
-        <button type=submit" class="btn btn-secondary">Зарегистрироваться</button>
+        <button type="submit" class="btn btn-secondary my-5">Зарегистрироваться</button>
     </form>
 </@c.page>

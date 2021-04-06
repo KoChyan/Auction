@@ -5,14 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.koChyan.Auction.dao.LotDAO;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.repos.LotRepo;
-import ru.koChyan.Auction.repos.PricingRepo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,26 +20,29 @@ public class LotService {
     @Value("${upload.path}")
     private String uploadPath;
 
-    private final LotRepo lotRepo;
-    private final PricingService pricingService;
+    @Autowired
+    private LotRepo lotRepo;
 
     @Autowired
-    public LotService(LotRepo lotRepo, PricingService pricingService) {
-        this.lotRepo = lotRepo;
-        this.pricingService = pricingService;
+    private PricingService pricingService;
+
+    @Autowired
+    private LotDAO lotDAO;
+
+    public List<Lot> findByFilter(String filterName, String filterDescription) {
+        if (
+                (filterName == null || filterName.trim().isEmpty()) &&
+                        (filterDescription == null || filterDescription.trim().isEmpty())
+        )return lotRepo.findAll();
+
+            return lotDAO.findByFilter(filterName, filterDescription);
     }
 
-    public void addLot(User user, String name, String description, Double initialRate, String startDate, Double timeStep, MultipartFile file) throws IOException {
-        Lot lot = new Lot();
+    public void addLot(User user, Lot lot, MultipartFile file) throws IOException {
 
-        lot.setStartTime(new Date(startDate));
-        lot.setTimeStep(timeStep);
         lot.setStatus("");
         lot.setCreator(user);
-        lot.setName(name);
-        lot.setDescription(description);
-        lot.setInitialRate(initialRate);
-        lot.setFinalRate(initialRate);
+        lot.setFinalBet(lot.getInitialBet());
 
 
         //если из формы был получен файл
@@ -67,13 +70,24 @@ public class LotService {
             Thumbnails.of(uploadPath + "/" + resultFilename)
                     .size(300, 300)
                     .outputQuality(0.85)
-                    .toFile(uploadPath + "/resized/" + resultFilename);
-
+                    .toFile(uploadPath + "/resized/300px_" + resultFilename);
         }
 
         lotRepo.save(lot);
 
         //зададим ставку создателя как стартовую
-        pricingService.addPrice(user, lot, new Date(startDate));
+        pricingService.addPrice(user, lot);
+    }
+
+    public void updateLastBet(Lot lot, Long bet) {
+        lotDAO.updateLastBet(lot.getId(), bet);
+    }
+
+    public List<Lot> getAll() {
+        return lotRepo.findAll();
+    }
+
+    public Iterable<Lot> findByName(String filter) {
+        return lotRepo.findByName(filter);
     }
 }

@@ -1,45 +1,71 @@
 <#include "security.ftlh">
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand mb-0 h1" href="/">Ambey</a>
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/main">Main</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/lot/add">создать лот</a>
-            </li>
-            <#if isUser>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Ambey</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="/user/profile">Профиль</a>
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
-            </#if>
-
-            <#if isAdmin>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Лот
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/lot">Посмотреть существующие</a></li>
+                        <li><a class="dropdown-item" href="/lot/add">Добавить лот</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/user">User list</a>
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                 </li>
-                <#else>
-            </#if>
-
-        </ul>
-            <div class="mx-auto">
-                <form method="get" class="form-inline my-2 my-lg-0" action="/main">
-                    <input type="text" name="filter" class="form-control mr-sm-2 " placeholder="filter"/>
-                    <button type="submit" class="btn btn-outline-secondary my-2">Найти</button>
+            </ul>
+            <div class="container-fluid" style="width: 30rem">
+                <form class="d-flex" action="/lot" method="get">
+                    <input class="form-control me-2" type="search" placeholder="name" aria-label="Search"
+                           name="name">
+                    <input class="form-control me-2" type="search" placeholder="description" aria-label="Search"
+                           name="description">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
             </div>
-        <#if isUser>
-            <div class=".navbar-text ml-3 mr-3 my-2"> ${name}</div>
-            <div class=".navbar-text my-2"><#include "logout.ftlh"></div>
-            <#else>
-        </#if>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <#if isUser??>${name!'guest'}</#if>
+                    </a>
+                    <ul class="dropdown-menu text-center" aria-labelledby="navbarDropdown">
+                        <#if isUser>
+                            <li><a class="dropdown-item" href="/user/profile">Профиль</a></li>
+                        </#if>
+                        <#if isAdmin>
+                            <li><a class="dropdown-item" href="/user">Список пользователей</a></li>
+                        </#if>
+                        <#if !isUser>
+                            <li><a class="dropdown-item" href="/login">Sign in</a></li>
+                        </#if>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <#if !isUser>
+                            <li><a class="dropdown-item" href="/registration">Create account</a></li>
+                        </#if>
+                        <#if isUser || isAdmin>
+                            <li class="my-2"><#include "logout.ftlh"></li>
+                        </#if>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
