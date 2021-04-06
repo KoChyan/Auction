@@ -1,7 +1,6 @@
 package ru.koChyan.Auction.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,8 +21,6 @@ import java.util.Map;
 @Controller
 @RequestMapping("/lot")
 public class LotController {
-    @Value("${upload.path}")
-    private String uploadPath;
 
     @Autowired
     private LotService lotService;
@@ -45,7 +42,7 @@ public class LotController {
 
 
     @GetMapping("/add")
-    public String lotForm(Model model) {
+    public String getLotForm(Model model) {
 
         return "lot/lotAdd";
     }
@@ -53,16 +50,18 @@ public class LotController {
     @PostMapping("/add")
     public String add(
             @AuthenticationPrincipal User user,
+            @RequestParam(name = "startTime") String startTime,
             @Valid Lot lot,
             BindingResult bindingResult,
             Model model,
             @RequestParam(name = "file") MultipartFile file
     ) throws IOException {
 
+        bindingResult = DateValidation.justFuture(startTime, bindingResult);
+
         //если есть ошибки при вводе данных
         if (bindingResult.hasErrors()) {
             Map<String, List<String>> errorsMap = ControllerUtils.getErrors(bindingResult);
-
             model.mergeAttributes(errorsMap);
             model.addAttribute("lot", lot);
             return "lot/lotAdd";

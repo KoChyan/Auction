@@ -51,9 +51,8 @@
             <div class="form-group row my-4">
                 <label for="date" class="col-sm-2 col-form-label mr-3">Дата начала торгов</label>
                 <div class="col-sm-6">
-                    <input type="datetime-local"
-                           value="2021-01-01T00:00"
-                           id="date" class="form-control  ${(startTimeError??)?string('is-invalid', '')} ">
+                    <input type="datetime-local" id="date"
+                           class="form-control ${(startTimeError??)?string('is-invalid', '')}">
                     <input type="hidden" id="hiddenDate" name="startTime">
                     <#if startTimeError??>
                         <#list startTimeError as stErr >

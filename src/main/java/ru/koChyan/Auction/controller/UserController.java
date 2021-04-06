@@ -45,7 +45,8 @@ public class UserController {
             @RequestParam() Map<String, String> form,
             @RequestParam(name = "balance") Long balance,
             @RequestParam(name = "userId") User user,
-            Model model) {
+            Model model
+    ) {
 
         userService.saveUser(user, username, form, balance);
         return "redirect:/user";
@@ -62,11 +63,12 @@ public class UserController {
     @PostMapping("/profile")
     public String updateProfile(
             @AuthenticationPrincipal User user,
-            @RequestParam() String password,
-            @RequestParam() String email
+            User userFromForm,
+            Model model
     ) {
 
-        userService.updateProfile(user, password, email);
+
+        userService.updateProfile(user, userFromForm.getPassword(), userFromForm.getEmail());
         return "redirect:/profile";
     }
 

@@ -26,9 +26,6 @@ public class Lot {
     @Length(max = 2048, message = "Слишком длинное описание")
     private String description;
 
-    @NotNull(message = "Обязательное поле")
-    @Future(message = "Дата не может быть текущим или прошлым моментом")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
 
     private Date endTime;

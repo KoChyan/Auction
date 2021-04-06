@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.koChyan.Auction.dao.UserDAO;
 import ru.koChyan.Auction.domain.Role;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.repos.UserRepo;
@@ -25,17 +26,18 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
+    @Autowired
+    private UserDAO userDAO;
 
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user =  userRepo.findByUsername(s);
+        User user = userRepo.findByUsername(s);
 
-        if(user == null)
+        if (user == null)
             throw new UsernameNotFoundException("Такой пользователь не найден");
 
-            return user;
+        return user;
     }
 
     public boolean addUser(User user) {
@@ -156,7 +158,10 @@ public class UserService implements UserDetailsService {
         if (!StringUtils.isEmptyOrWhitespaceOnly(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
-        userRepo.save(user);
+
+        //userRepo.save(user);
+        userDAO.updateProfile(user.getId(), user.getPassword(), user.getEmail());
+
 
         //отправляем код активации, если email был изменен
         //и не был занят другим пользователем

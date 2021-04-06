@@ -39,8 +39,9 @@
     <script type="text/javascript">
 
         function dateToUTC() {
-            let dateText = document.getElementById('date').value;
-            document.getElementById('hiddenDate').value = new Date(dateText).toUTCString();
+            let startDate = document.getElementById('date').value;
+
+            document.getElementById('hiddenDate').value = new Date(startDate).toUTCString();
         }
 
         function hiddenDateIsNow(){
