@@ -15,10 +15,10 @@ public class UserDAO {
     @Transactional
     public void updateProfile(Long userId, String newPassword, String newEmail) {
 
-        em.createQuery("UPDATE User SET " +
-                "password = :newPassword, " +
-                "email = :newEmail " +
-                "WHERE User.id = :id")
+        em.createQuery("UPDATE User u SET " +
+                "u.password = :newPassword, " +
+                "u.email = :newEmail " +
+                "WHERE u.id = :id")
                 .setParameter("newPassword", newPassword)
                 .setParameter("newEmail", newEmail)
                 .setParameter("id", userId)

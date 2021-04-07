@@ -9,6 +9,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.client.RestTemplate;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.service.UserService;
 
@@ -21,6 +22,9 @@ public class RegistrationController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
 
     @GetMapping("/registration")
     public String registration() {
@@ -29,9 +33,10 @@ public class RegistrationController {
 
     @PostMapping("/registration")
     public String addUser(
+            Model model,
             @Valid User user,
-            BindingResult bindingResult,
-            Model model) {
+            BindingResult bindingResult
+            ) {
 
 
         if (bindingResult.hasErrors()) {

@@ -4,22 +4,37 @@
         <h5>${username!''}</h5>
     </div>
 
-    <form method="post">
+    <form method="post" action="/user/profile">
+        <input type="hidden" name="username">
 
-        <div class="form-group row">
+        <div class="form-group row my-3">
             <label class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-5">
-                <input type="password" class="form-control"
+                <input type="password" class="form-control ${(passwordError??)?string('is-invalid', '')}"
                        placeholder="Enter new password"
                        name="password"/>
+                <#if passwordError??>
+                    <#list passwordError as pErr >
+                        <div class="invalid-feedback">
+                            ${pErr}
+                        </div>
+                    </#list>
+                </#if>
             </div>
         </div>
-        <div class="form-group row">
+        <div class="form-group row my-3">
             <label class="col-sm-2 col-form-label">Email</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control "
-                       value="${email!''}" placeholder="example@gmail.com"
+                <input type="text" class="form-control ${(emailError??)?string('is-invalid', '')}"
+                       value="${email!''}" placeholder="newEmail@gmail.com"
                        name="email"/>
+                <#if emailError??>
+                    <#list emailError as eErr >
+                        <div class="invalid-feedback">
+                            ${eErr}
+                        </div>
+                    </#list>
+                </#if>
             </div>
         </div>
 

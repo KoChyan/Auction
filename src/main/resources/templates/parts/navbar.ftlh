@@ -49,16 +49,16 @@
                             <li><a class="dropdown-item" href="/user/profile">Профиль</a></li>
                         </#if>
                         <#if isAdmin>
-                            <li><a class="dropdown-item" href="/user">Список пользователей</a></li>
+                            <li><a class="dropdown-item" href="/user/list">Список пользователей</a></li>
                         </#if>
                         <#if !isUser>
-                            <li><a class="dropdown-item" href="/login">Sign in</a></li>
+                            <li><a class="dropdown-item" href="/login">Войти</a></li>
                         </#if>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <#if !isUser>
-                            <li><a class="dropdown-item" href="/registration">Create account</a></li>
+                            <li><a class="dropdown-item" href="/registration">Зарегистрироваться</a></li>
                         </#if>
                         <#if isUser || isAdmin>
                             <li class="my-2"><#include "logout.ftlh"></li>

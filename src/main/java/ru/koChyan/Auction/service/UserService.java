@@ -108,10 +108,11 @@ public class UserService implements UserDetailsService {
         return userRepo.findAll();
     }
 
-
     public void saveUser(User user, String username, Map<String, String> form, Long balance) {
+
         user.setUsername(username);
         user.setBalance(balance);
+
         //помещаем в Set все существующие роли
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)
@@ -120,6 +121,7 @@ public class UserService implements UserDetailsService {
         //очистим список ролей пользователя
         user.getRoles().clear();
 
+        //установим роли, которые были получены из формы
         for (String key : form.keySet())
             if (roles.contains(key)) {
                 user.getRoles().add(Role.valueOf(key));
@@ -128,40 +130,38 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
     }
 
-    public void updateProfile(User user, String password, String email) {
+    public void updateProfile(User user, String newPassword, String newEmail) {
         String userEmail = user.getEmail();
 
         //проверяем старую и новую почту на равенство null и друг другу
-        boolean isEmailChanged = (email != null && !email.equals(userEmail) ||
-                userEmail != null && !userEmail.equals(email));
+        boolean isEmailChanged = (userEmail != null && !userEmail.equals(newEmail) ||
+                newEmail != null && !newEmail.equals(userEmail));
 
         //если email изменился и он не null
         //то ищем, есть ли уже другой пользователь
         //с таким email в БД
-        User userFromDb = userRepo.findByEmail(email);
+        User userFromDb = userRepo.findByEmail(newEmail);
 
         //Если в БД пользователь с таким email не найден
         //то изменяем почту пользователю из формы
         if (userFromDb == null)
             if (isEmailChanged) {
-                user.setEmail(email);
+                user.setEmail(newEmail);
 
                 //если пользователь установил новый непустой email
-                if (!StringUtils.isEmptyOrWhitespaceOnly(email)) {
+                if (!StringUtils.isEmptyOrWhitespaceOnly(newEmail)) {
 
                     //то устанавливаем ему код активации
                     user.setActivationCode(UUID.randomUUID().toString());
                 }
             }
 
-        //если пользователь установил новый непустой пароль, то устанавливаем его
-        if (!StringUtils.isEmptyOrWhitespaceOnly(password)) {
-            user.setPassword(passwordEncoder.encode(password));
+        //если пользователь ввел новый непустой пароль, то устанавливаем его
+        if (!StringUtils.isEmptyOrWhitespaceOnly(newPassword)) {
+            user.setPassword(passwordEncoder.encode(newPassword));
         }
 
-        //userRepo.save(user);
-        userDAO.updateProfile(user.getId(), user.getPassword(), user.getEmail());
-
+        userRepo.save(user);
 
         //отправляем код активации, если email был изменен
         //и не был занят другим пользователем
@@ -169,5 +169,9 @@ public class UserService implements UserDetailsService {
             if (isEmailChanged) {
                 sendMessage(user);
             }
+    }
+
+    public Optional<User> findById(Long id) {
+        return userRepo.findById(id);
     }
 }

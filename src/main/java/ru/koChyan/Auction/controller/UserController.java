@@ -5,11 +5,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.koChyan.Auction.domain.Role;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.service.UserService;
 
+import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 
@@ -22,7 +25,7 @@ public class UserController {
 
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping()
+    @GetMapping("/list")
     public String userList(Model model) {
 
         model.addAttribute("users", userService.findAll());
@@ -35,7 +38,7 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.values());
 
-        return "userEdit";
+        return "user/userEdit";
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -43,13 +46,12 @@ public class UserController {
     public String userSave(
             @RequestParam(name = "username") String username,
             @RequestParam() Map<String, String> form,
-            @RequestParam(name = "balance") Long balance,
-            @RequestParam(name = "userId") User user,
-            Model model
+            @RequestParam(name = "balance")  Long balance,
+            @RequestParam(name = "userId") User user
     ) {
 
         userService.saveUser(user, username, form, balance);
-        return "redirect:/user";
+        return "redirect:/user/list";
     }
 
     @GetMapping("/profile")
@@ -63,13 +65,23 @@ public class UserController {
     @PostMapping("/profile")
     public String updateProfile(
             @AuthenticationPrincipal User user,
-            User userFromForm,
-            Model model
+            Model model,
+            @Valid User userFromForm,
+            BindingResult bindingResult
     ) {
 
+        if(bindingResult.hasErrors()){
+            Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
-        userService.updateProfile(user, userFromForm.getPassword(), userFromForm.getEmail());
-        return "redirect:/profile";
+            model.addAttribute("username", user.getUsername());
+            model.addAttribute("email", user.getEmail());
+            model.mergeAttributes(errors);
+            return "user/profile";
+
+        }else{
+            userService.updateProfile(user, userFromForm.getPassword(), userFromForm.getEmail());
+            return "redirect:/user/profile";
+        }
     }
 
 }
