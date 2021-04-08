@@ -3,7 +3,10 @@ package ru.koChyan.Auction.domain;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -23,7 +26,7 @@ public class Lot {
     private String name;
 
     @NotBlank(message = "Обязательное поле")
-    @Length(max = 2048, message = "Слишком длинное описание")
+    @Length(max = 1024, message = "Слишком длинное описание")
     private String description;
 
     private Date startTime;
@@ -46,7 +49,6 @@ public class Lot {
     private String filename;
 
     private String status;
-
 
 
     public Lot() {
