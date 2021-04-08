@@ -19,7 +19,7 @@ public class User implements UserDetails {
     private Long id;
 
     @NotBlank(message = "Обязательное поле")
-    @Length(max = 16, message = "Имя пользователя не может иметь более 16 символов")
+    @Length(min = 2, max = 16, message = "Необходимо ввести от 2 до 16 символов")
     private String username;
 
     @NotBlank(message = "Обязательное поле")

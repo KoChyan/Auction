@@ -1,7 +1,7 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
     <div class="m-5">
-        ${message?ifExists}
+        ${message!''}
     </div>
     <form method="post" action="/registration">
         <div class="form-group row my-3">
@@ -11,9 +11,9 @@
                        placeholder="example@gmail.com" value="<#if user??>${user.getEmail()!''}</#if>"
                        name="email"/>
                 <#if emailError??>
-                    <#list emailError as eErr >
+                    <#list emailError as emailEr >
                         <div class="invalid-feedback">
-                            ${eErr}
+                            ${emailEr}
                         </div>
                     </#list>
                 </#if>
@@ -27,9 +27,9 @@
                        placeholder="Enter username" value="<#if user??>${user.getUsername()!''}</#if>"
                        name="username"/>
                 <#if usernameError??>
-                    <#list usernameError as uErr >
+                    <#list usernameError as usernameEr >
                         <div class="invalid-feedback">
-                            ${uErr}
+                            ${usernameEr}
                         </div>
                     </#list>
                 </#if>
@@ -47,6 +47,17 @@
                             ${pErr}
                         </div>
                     </#list>
+                </#if>
+            </div>
+        </div>
+
+        <div class="mb-3 mt-5">
+            <div class="g-recaptcha my-5" data-sitekey="6LeCm6EaAAAAAFCCEHbfJ04cG9L4AbbYSlhvnuAv"></div>
+            <div class="text-center">
+                <#if captchaError??>
+                    <div class="alert alert-danger" role="alert" style="max-width: 80rem;">
+                        ${captchaError}
+                    </div>
                 </#if>
             </div>
         </div>

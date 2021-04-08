@@ -23,7 +23,7 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("login");
     }
 
-    //все обращения по адресу /img/.../.../... будет перенаправлять все запросы на file:/uploadPath/
+    //все обращения по адресу /img/... будет перенаправлять все запросы на file:/uploadPath/
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/img/**")

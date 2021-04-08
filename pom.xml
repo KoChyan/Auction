@@ -95,20 +95,21 @@
             <scope>test</scope>
         </dependency>
 
-        <!--for rememberMe -->
-        <!-- https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc -->
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-jdbc</artifactId>
-            <version>2.4.2</version>
-        </dependency>
-
         <!--Spring Boot Mail-->
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+
+        <!--rememberMe save session in db -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc -->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-jdbc</artifactId>
+        </dependency>
+
+
 
     </dependencies>
 
