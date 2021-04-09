@@ -101,13 +101,5 @@ public class LotController {
         return "lot/lotBets";
     }
 
-    @GetMapping("/{lot}/comment")
-    public String listComments(
-            @PathVariable Lot lot,
-            Model model
-    ) {
-
-        return "lot/lotComments";
-    }
 
 }

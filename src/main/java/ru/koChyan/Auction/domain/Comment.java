@@ -1,6 +1,10 @@
 package ru.koChyan.Auction.domain;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Entity
 @Table(name = "comment")
@@ -9,7 +13,11 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "Обязательное поле")
+    @Length(max = 512, message = "Слишком длинный комментарий")
     private String text;
+
+    private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
@@ -49,5 +57,13 @@ public class Comment {
 
     public void setLot(Lot lot) {
         this.lot = lot;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

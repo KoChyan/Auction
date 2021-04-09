@@ -3,6 +3,7 @@ package ru.koChyan.Auction.dao;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.koChyan.Auction.domain.Lot;
+import ru.koChyan.Auction.domain.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,7 +20,7 @@ public class LotDAO {
     private EntityManager em;
 
     @Transactional
-    public void updateLastBet(Long lotId, Long bet){
+    public void updateLastBet(Long lotId, Long bet) {
 
         em.createNativeQuery("UPDATE lot SET lot.final_bet = :bet WHERE lot.id = :id")
                 .setParameter("bet", bet)
@@ -34,14 +35,26 @@ public class LotDAO {
         Root<Lot> root = criteria.from(Lot.class);
         Predicate predicate = cb.conjunction();
 
-        if(filterName != null && !filterName.trim().isEmpty()){
+        if (filterName != null && !filterName.trim().isEmpty()) {
             predicate = cb.and(cb.equal(root.get("name"), filterName));
         }
-        if(filterDescription != null && !filterDescription.trim().isEmpty()){
+        if (filterDescription != null && !filterDescription.trim().isEmpty()) {
             predicate.getExpressions().add(cb.like(root.get("description"), filterDescription));
         }
 
         criteria.where(predicate);
         return em.createQuery(criteria).getResultList();
+    }
+
+    public User findUserByLotId(Long lotId) {
+
+        String query = "SELECT User FROM User " +
+                "JOIN Lot ON User.id = Lot.creator.id " +
+                "WHERE Lot.id = :lotId ";
+
+        return (User) em.createQuery(query)
+                .setParameter("lotId", lotId)
+                .getSingleResult();
+
     }
 }
