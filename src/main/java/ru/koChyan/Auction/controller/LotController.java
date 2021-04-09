@@ -35,7 +35,6 @@ public class LotController {
             @RequestParam(name = "description", required = false, defaultValue = "") String filterByDescription
     ) {
 
-
         model.addAttribute("lots", lotService.findByFilter(filterByName, filterByDescription));
         return "lot/lotList";
     }
@@ -62,6 +61,7 @@ public class LotController {
         //если есть ошибки при вводе данных
         if (bindingResult.hasErrors()) {
             Map<String, List<String>> errorsMap = ControllerUtils.getErrors(bindingResult);
+
             model.mergeAttributes(errorsMap);
             model.addAttribute("lot", lot);
             return "lot/lotAdd";
@@ -91,7 +91,6 @@ public class LotController {
             @RequestParam(name = "date") String date,
             Model model
     ) {
-
         pricingService.addPrice(user, lot, bet, new Date(date));
         lotService.updateLastBet(lot, bet);
 

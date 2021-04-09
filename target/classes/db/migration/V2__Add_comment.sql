@@ -1,3 +1,4 @@
+
 CREATE TABLE comment
 (
     id        BIGINT NOT NULL,
@@ -10,9 +11,9 @@ CREATE TABLE comment
 
 ALTER TABLE comment
     ADD CONSTRAINT comment_user_fk
-        FOREIGN KEY (author_id) REFERENCES comment (id);
+        FOREIGN KEY (author_id) REFERENCES user (id);
 
 ALTER TABLE comment
     ADD CONSTRAINT comment_lot
-        FOREIGN KEY (lot_id) REFERENCES comment (id);
+        FOREIGN KEY (lot_id) REFERENCES lot (id);
 

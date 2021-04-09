@@ -14,7 +14,6 @@ public class DateValidation {
 
     public static BindingResult justFuture(String strStartDate, BindingResult bindingResult) {
 
-        System.out.println("////////////////|" + strStartDate);
         if (Strings.isNullOrEmpty(strStartDate) || strStartDate.equals("Invalid Date")) {
 
             //удаляем ошибку Failed to convert property value of type 'java.lang.String'

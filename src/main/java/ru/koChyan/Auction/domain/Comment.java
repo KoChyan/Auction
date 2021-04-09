@@ -13,7 +13,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank(message = "Обязательное поле")
+    @NotBlank(message = "Невозможно оставить пустой комментарий")
     @Length(max = 512, message = "Слишком длинный комментарий")
     private String text;
 
