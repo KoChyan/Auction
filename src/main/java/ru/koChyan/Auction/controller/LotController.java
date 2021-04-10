@@ -5,7 +5,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.User;
@@ -14,7 +17,6 @@ import ru.koChyan.Auction.service.PricingService;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +45,7 @@ public class LotController {
     @GetMapping("/add")
     public String getLotForm(Model model) {
 
-        return "lot/lotAdd";
+        return "lot/addLot";
     }
 
     @PostMapping("/add")
@@ -56,7 +58,7 @@ public class LotController {
             @RequestParam(name = "file") MultipartFile file
     ) throws IOException {
 
-        bindingResult = DateValidation.justFuture(startTime, bindingResult);
+        bindingResult = Validator.justFuture(startTime, bindingResult);
 
         //если есть ошибки при вводе данных
         if (bindingResult.hasErrors()) {
@@ -64,40 +66,11 @@ public class LotController {
 
             model.mergeAttributes(errorsMap);
             model.addAttribute("lot", lot);
-            return "lot/lotAdd";
+            return "lot/addLot";
         }
 
         lotService.addLot(user, lot, file);
         return "redirect:/lot";
-    }
-
-    @GetMapping("/{lot}/bet")
-    public String listBets(
-            @PathVariable Lot lot,
-            Model model
-    ) {
-
-        model.addAttribute("lot", lot);
-        model.addAttribute("pricing", pricingService.findLastThreeByLotId(lot.getId()));
-
-        return "lot/lotBets";
-    }
-
-    @PostMapping("/{lot}/bet")
-    public String addBet(
-            @AuthenticationPrincipal User user,
-            @PathVariable Lot lot,
-            @RequestParam(name = "bet") Long bet,
-            @RequestParam(name = "date") String date,
-            Model model
-    ) {
-        pricingService.addPrice(user, lot, bet, new Date(date));
-        lotService.updateLastBet(lot, bet);
-
-        model.addAttribute("lot", lot);
-        model.addAttribute("pricing", pricingService.findLastThreeByLotId(lot.getId()));
-
-        return "lot/lotBets";
     }
 
 

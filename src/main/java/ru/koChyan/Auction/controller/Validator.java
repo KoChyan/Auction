@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DateValidation {
+public class Validator {
 
     public static BindingResult justFuture(String strStartDate, BindingResult bindingResult) {
 
@@ -18,7 +18,7 @@ public class DateValidation {
 
             //удаляем ошибку Failed to convert property value of type 'java.lang.String'
             // to required type 'java.util.Date'... Она не нужна на view
-            //переписываем bindingResult без ошибки startTime
+            //переписываем bindingResult без этой ошибки в поле startTime
 
             List<FieldError> errorList = bindingResult.getFieldErrors().stream()
                     .filter(error -> !error.getField().equals("startTime"))
@@ -26,7 +26,7 @@ public class DateValidation {
 
             bindingResult = new BeanPropertyBindingResult(Lot.class, "lot");
 
-            for(FieldError error : errorList){
+            for (FieldError error : errorList) {
                 bindingResult.addError(error);
             }
 
@@ -49,5 +49,9 @@ public class DateValidation {
             ));
         }
         return bindingResult;
+    }
+
+    public static void justGreater() {
+        return;
     }
 }

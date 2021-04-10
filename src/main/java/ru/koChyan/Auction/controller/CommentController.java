@@ -6,7 +6,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.koChyan.Auction.domain.Comment;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.User;
@@ -29,6 +32,7 @@ public class CommentController {
             @PathVariable Lot lot,
             Model model
     ) {
+
         model.addAttribute("lot", lot);
         model.addAttribute("comments", commentService.getAllByLotId(lot.getId()));
         return "comment/lotCommentList";
@@ -52,7 +56,7 @@ public class CommentController {
         } else {
 
             commentService.addComment(comment, lot, user);
-            return "redirect:/lot/" +lot.getId() + "/comment";
+            return "redirect:/lot/" + lot.getId() + "/comment";
         }
     }
 
@@ -60,10 +64,10 @@ public class CommentController {
     public String deleteComment(
             @PathVariable Lot lot,
             @PathVariable Comment comment
-    ){
+    ) {
 
         commentService.remove(comment);
-        return "redirect:/lot/" +lot.getId() + "/comment";
+        return "redirect:/lot/" + lot.getId() + "/comment";
     }
 
 }

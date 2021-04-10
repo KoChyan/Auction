@@ -1,4 +1,5 @@
 <#import '../parts/common.ftlh' as c>
+<#include "../parts/security.ftlh">
 <@c.page>
 
     <div class="card mb-3">
@@ -27,10 +28,13 @@
                     <p class="text-break">${comment.getText()!''}</p>
                 </div>
                 <div class="col-sm-1">
-                    <form method="post" action="/lot/${lot.getId()!''}/comment/${comment.getId()!''}/delete">
-                        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Х</button>
-                    </form>
+                    <#if isAdmin??>
+                        <form method="post" action="/lot/${lot.getId()!''}/comment/${comment.getId()!''}/delete">
+                            <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Х</button>
+                        </form>
+                        <#else>
+                    </#if>
                 </div>
             </div>
             </#list>

@@ -7,7 +7,7 @@ import ru.koChyan.Auction.domain.Comment;
 import java.util.List;
 
 @Repository
-public interface CommentRepo  extends JpaRepository<Comment, Long> {
+public interface CommentRepo extends JpaRepository<Comment, Long> {
 
     List<Comment> findByAuthorId(Long id);
 

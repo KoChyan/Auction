@@ -26,7 +26,7 @@
                     </div>
                 </#list>
                 <div class="mt-5 mb-2" style="font-size: 14pt">Текущая ставка: ${pricing[0].getBet()!''}</div>
-                <div class="mb-5" style="font-size: 14pt">До окончания торгов: 123 секунд(ы)</div>
+                <div class="mb-5" style="font-size: 14pt">До окончания торгов: ${timeLeft}</div>
                 <form method="post" action="/lot/${lot.getId()}/bet">
                     <div class="form-group row mt-5 mb-3">
                         <label for="inputBet" class="col-sm-2 col-form-label mr-2 mb-2">Ставка</label>

@@ -14,4 +14,5 @@ public interface PricingRepo extends JpaRepository<Pricing, Long> {
     List<Pricing> findLastThreeByLotId(Long id);
 
     List<Pricing> findAllByLotId(Long id);
+
 }

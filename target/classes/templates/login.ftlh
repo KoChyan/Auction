@@ -17,7 +17,6 @@
 
     <form method="post" action="/login">
         <div class="form-group row my-3">
-            <label for="inputUsername" class="col-sm-2 col-form-label">User name</label>
             <div class="col-sm-5">
                 <input type="text" class="form-control " id="inputUsername"
                        placeholder="Enter username"
@@ -25,7 +24,6 @@
             </div>
         </div>
         <div class="form-group row my-3">
-            <label class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-5">
                 <input type="password" class="form-control"
                        placeholder="Enter password"
