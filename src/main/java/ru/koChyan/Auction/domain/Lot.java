@@ -141,4 +141,5 @@ public class Lot {
     public void setTimeStep(Integer timeStep) {
         this.timeStep = timeStep;
     }
+
 }

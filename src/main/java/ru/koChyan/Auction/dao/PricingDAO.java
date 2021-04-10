@@ -12,15 +12,16 @@ public class PricingDAO {
     @PersistenceContext
     private EntityManager em;
 
-    public Date getLastPricingDateByLotId(Long id){
+    public Date getLastPricingDateByLotId(Long id) {
 
-        return (Date)em.createNativeQuery("SELECT date FROM pricing " +
+        String query = "SELECT date FROM pricing " +
                 "WHERE lot_id = :lotId " +
-                "ORDER BY bet DESC LIMIT 1")
+                "ORDER BY bet DESC LIMIT 1";
+
+        return (Date) em.createNativeQuery(query)
                 .setParameter("lotId", id)
                 .getSingleResult();
 
     }
-
 
 }

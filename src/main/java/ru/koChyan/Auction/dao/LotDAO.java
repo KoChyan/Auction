@@ -22,7 +22,9 @@ public class LotDAO {
     @Transactional
     public void updateLastBet(Long lotId, Long bet) {
 
-        em.createNativeQuery("UPDATE lot SET lot.final_bet = :bet WHERE lot.id = :id")
+        String query = "UPDATE lot SET lot.final_bet = :bet WHERE lot.id = :id";
+
+        em.createNativeQuery(query)
                 .setParameter("bet", bet)
                 .setParameter("id", lotId)
                 .executeUpdate();
@@ -55,6 +57,5 @@ public class LotDAO {
         return (User) em.createQuery(query)
                 .setParameter("lotId", lotId)
                 .getSingleResult();
-
     }
 }

@@ -25,17 +25,41 @@
                         <div class="col" style="font-size: 14pt">${p.getBet()!''}</div>
                     </div>
                 </#list>
-                <div class="mt-5 mb-2" style="font-size: 14pt">Текущая ставка: ${pricing[0].getBet()!''}</div>
-                <div class="mb-5" style="font-size: 14pt">До окончания торгов: ${timeLeft}</div>
+                <div class="mt-4 mb-2" style="font-size: 14pt">
+                    Текущая ставка: ${pricing[0].getBet()!''}
+                </div>
+                <div class="mb-3" style="font-size: 14pt">
+                    Максимальный интервал между ставками, минут: ${lot.getTimeStep()}
+                </div>
+                <#if timeLeft??>
+                <div class="mt-5 mb-2" style="font-size: 14pt">
+                    До окончания приема ставок, секунд: ${timeLeft}
+                </div>
+                </#if>
+
+                <#if timeBefore??>
+                <div class="mb-5" style="font-size: 14pt">
+                    До начала аукциона, секунд: ${timeBefore}
+                </div>
+                </#if>
+
                 <form method="post" action="/lot/${lot.getId()}/bet">
                     <div class="form-group row mt-5 mb-3">
                         <label for="inputBet" class="col-sm-2 col-form-label mr-2 mb-2">Ставка</label>
                         <div class="col col-sm-4">
-                            <input type="number" class="form-control" id="inputBet" placeholder="400"
-                                   name="bet"/>
+                            <input type="number" class="form-control ${(betError??)?string('is-invalid', '')}"
+                                   id="inputBet" placeholder="400"
+                                   name="bet">
+                            <#if betError??>
+                                <#list betError as betErr>
+                                    <div class="invalid-feedback">
+                                        ${betErr}
+                                    </div>
+                                </#list>
+                            </#if>
                         </div>
                         <input type="hidden" name="date" id="hiddenDate">
-                        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                        <input type="hidden" name="_csrf" value="${_csrf.token}">
 
                         <button class="btn btn-outline-secondary px-2 mx-2" style="height: 2.4rem; width: 8rem"
                                 onclick="hiddenDateIsNow()" type="submit">
