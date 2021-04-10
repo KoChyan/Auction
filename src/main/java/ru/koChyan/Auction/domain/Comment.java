@@ -14,7 +14,7 @@ public class Comment {
     private Long id;
 
     @NotBlank(message = "Невозможно оставить пустой комментарий")
-    @Length(max = 512, message = "Слишком длинный комментарий")
+    @Length(max = 64, message = "Слишком длинный комментарий")
     private String text;
 
     private Date date;

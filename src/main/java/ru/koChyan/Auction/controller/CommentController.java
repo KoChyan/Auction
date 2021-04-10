@@ -17,24 +17,24 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping()
+@RequestMapping("/lot/{lot}/comment")
 public class CommentController {
 
     @Autowired
     private CommentService commentService;
 
 
-    @GetMapping("/lot/{lot}/comment")
+    @GetMapping()
     public String commentList(
             @PathVariable Lot lot,
             Model model
     ) {
-
-        model.addAttribute("comments", commentService.getAll());
+        model.addAttribute("lot", lot);
+        model.addAttribute("comments", commentService.getAllByLotId(lot.getId()));
         return "comment/lotCommentList";
     }
 
-    @PostMapping("/lot/{lot}/comment")
+    @PostMapping()
     public String addComment(
             @AuthenticationPrincipal User user,
             @PathVariable Lot lot,
@@ -47,7 +47,7 @@ public class CommentController {
 
             model.mergeAttributes(errors);
             model.addAttribute("lot", lot);
-            model.addAttribute("comments", commentService.getAll());
+            model.addAttribute("comments", commentService.getAllByLotId(lot.getId()));
             return "comment/lotCommentList";
         } else {
 
@@ -56,14 +56,14 @@ public class CommentController {
         }
     }
 
-    @PostMapping("/comment/delete/{comment}")
+    @PostMapping("/{comment}/delete")
     public String deleteComment(
+            @PathVariable Lot lot,
             @PathVariable Comment comment
-
     ){
 
-
-        return "redirect:/lot/" + "/comment";
+        commentService.remove(comment);
+        return "redirect:/lot/" +lot.getId() + "/comment";
     }
 
 }

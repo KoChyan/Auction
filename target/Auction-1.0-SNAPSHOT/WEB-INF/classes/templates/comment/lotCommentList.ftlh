@@ -36,7 +36,7 @@
             </#list>
             <form method="post">
                 <div class="form-group row my-4">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <input type="text" class="form-control ${(textError??)?string('is-invalid', '')} "
                                placeholder="Введите комментарий..." id="inputText"
                                value="<#if comment??>${comment.getText()!''}</#if>" aria-label="With textarea"
@@ -49,14 +49,11 @@
                             </#list>
                         </#if>
                     </div>
-
-                    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-
-                    <div class="col-sm-3">
-                        <button type="submit" class="btn btn-outline-secondary px-2 mx-2">Добавить</button>
-                    </div>
-
                 </div>
+
+                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+
+                <button type="submit" class="btn btn-outline-secondary px-2 mx-2" style="height: 2.4rem; width: 8rem">Добавить</button>
             </form>
             </p>
         </div>

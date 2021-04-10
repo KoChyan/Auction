@@ -8,12 +8,12 @@
                     <div class="card-header text-center">
                         <p class="h5 mt-2">${lot.getName()!''}</p>
                     </div>
-                    <div class="text-center">
-                        <img src="img/resized/300px_${lot.getFilename()!''}" class="card-img-top" alt="">
+                    <div>
+                        <img src="img/resized/300px_${lot.getFilename()!''}" class="card-img-top mx-auto d-block" alt="">
                     </div>
                     <div class="card-body p-0">
                         <div class="fw-bold mt-2 text-center">
-                            <p>Начало ${lot.getStartTime()?string('dd.MM.yyyy HH:mm:ss')!''}</p>
+                            <p>Начало ${lot.getStartTime()?string('dd.MM.yyyy HH:mm')!''}</p>
                         </div>
                         <div class="d-grid gap-2">
                             <button class="btn btn-outline-secondary btn-sm " type="button" data-bs-toggle="collapse"

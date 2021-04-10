@@ -30,7 +30,13 @@ public class CommentService {
         return commentRepo.findAll();
     }
 
-    public List<Comment> getAllByAuthorId(Long id){
-        return commentRepo.findAllByAuthorId(id);
+
+
+    public void remove(Comment comment){
+        commentRepo.delete(comment);
+    }
+
+    public List<Comment> getAllByLotId(Long id) {
+        return commentRepo.findByLotIdOrderByDateDesc(id);
     }
 }

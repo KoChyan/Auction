@@ -8,8 +8,8 @@
                     <div class="card-header text-center">
                         <p class="h5 mt-2">${lot.getName()!''}</p>
                     </div>
-                    <div>
-                        <img src="img/resized/300px_${lot.getFilename()!''}" class="card-img-top mx-auto d-block" alt="">
+                    <div class="text-center">
+                        <img src="img/resized/300px_${lot.getFilename()!''}" class="card-img-top mx-auto" alt="">
                     </div>
                     <div class="card-body p-0">
                         <div class="fw-bold mt-2 text-center">
