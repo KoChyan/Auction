@@ -1,13 +1,19 @@
 package ru.koChyan.Auction.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 import ru.koChyan.Auction.domain.Lot;
+import ru.koChyan.Auction.domain.Pricing;
 import ru.koChyan.Auction.domain.User;
+import ru.koChyan.Auction.domain.response.PricingResponse;
 import ru.koChyan.Auction.service.BetService;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
@@ -28,6 +34,9 @@ public class PricingController {
 
     @Autowired
     private BetService betService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
 
     @GetMapping()
@@ -53,7 +62,7 @@ public class PricingController {
     ) {
         BindingResult bindingResult = Validator.justGreater(lot, bet);
 
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
             model.mergeAttributes(errors);
@@ -62,15 +71,22 @@ public class PricingController {
             model.addAttribute("lot", lot);
             model.addAttribute("pricing", pricingService.findLastThreeByLotId(lot.getId()));
             return "bet/addBet";
-        }else{
+        } else {
 
             pricingService.addPrice(user, lot, bet, new Date(date));
             lotService.updateLastBet(lot, bet);
+            template.convertAndSend("/topic/greetings", new PricingResponse(HtmlUtils.htmlEscape(String.valueOf(bet))));
 
             return "redirect:/lot/" + lot.getId() + "/bet";
         }
     }
 
+    @MessageMapping("/hello")
+    @SendTo("/topic/greetings")
+    public PricingResponse greeting(Pricing pricing) {
 
+        return new PricingResponse(HtmlUtils.htmlEscape((pricing.getBet()) + ""));
+    }
 
 }
+

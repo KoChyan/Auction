@@ -1,7 +1,7 @@
 <#import "../parts/common.ftlh" as c>
-<@c.page>
+<@c.scriptPage "connect()">
 
-    <div class="container border">
+    <div  class="container border">
         <div class="row" style="background-color: #f8f9fa">
             <div class="col-sm-12 text-center mb-2 py-3">
                 <div class="h4">Лот: ${lot.getName()!''}</div>
@@ -18,29 +18,27 @@
                     <div class="col">Имя</div>
                     <div class="col">Ставка</div>
                 </div>
-                <#list pricing as p>
-                    <div class="row my-2">
-                        <div class="col">${p.getDate()?string('dd.MM.yyyy HH:mm:ss')!''}</div>
-                        <div class="col">${p.getUser().getUsername()!''}</div>
-                        <div class="col" style="font-size: 14pt">${p.getBet()!''}</div>
+
+                <div onload="connect()" class="row my-2">
+                    <div class="col">${pricing[0].getDate()?string('MM.dd HH:mm:ss')!''}</div>
+                    <div class="col">${pricing[0].getUser().getUsername()!''}</div>
+                    <div class="col" id="bet" style="font-size: 14pt">
+                        #{pricing[0].getBet()}
                     </div>
-                </#list>
-                <div class="mt-4 mb-2" style="font-size: 14pt">
-                    Текущая ставка: ${pricing[0].getBet()!''}
                 </div>
+
                 <div class="mb-3" style="font-size: 14pt">
                     Максимальный интервал между ставками, минут: ${lot.getTimeStep()}
                 </div>
                 <#if timeLeft??>
-                <div class="mt-5 mb-2" style="font-size: 14pt">
-                    До окончания приема ставок, секунд: ${timeLeft}
-                </div>
+                    <div class="mt-5 mb-2" style="font-size: 14pt">
+                        До окончания приема ставок, секунд: ${timeLeft}
+                    </div>
                 </#if>
-
                 <#if timeBefore??>
-                <div class="mb-5" style="font-size: 14pt">
-                    До начала аукциона, секунд: ${timeBefore}
-                </div>
+                    <div class="mb-5" style="font-size: 14pt">
+                        До начала аукциона, секунд: ${timeBefore}
+                    </div>
                 </#if>
 
                 <form method="post" action="/lot/${lot.getId()}/bet">
@@ -60,9 +58,8 @@
                         </div>
                         <input type="hidden" name="date" id="hiddenDate">
                         <input type="hidden" name="_csrf" value="${_csrf.token}">
-
-                        <button class="btn btn-outline-secondary px-2 mx-2" style="height: 2.4rem; width: 8rem"
-                                onclick="hiddenDateIsNow()" type="submit">
+                        <button type="submit" class="btn btn-outline-secondary px-2 mx-2" style="height: 2.4rem; width: 8rem"
+                                onclick="hiddenDateIsNow()">
                             Поставить
                         </button>
                     </div>
@@ -71,4 +68,5 @@
         </div>
         <div class="row" style="height:25px;    background-color: #f8f9fa"></div>
     </div>
-</@c.page>
+</@c.scriptPage>
+
