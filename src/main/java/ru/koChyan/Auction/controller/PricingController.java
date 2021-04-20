@@ -1,24 +1,22 @@
 package ru.koChyan.Auction.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
 import ru.koChyan.Auction.domain.Lot;
-import ru.koChyan.Auction.domain.Pricing;
 import ru.koChyan.Auction.domain.User;
-import ru.koChyan.Auction.domain.response.PricingResponse;
+import ru.koChyan.Auction.domain.response.TimerResponse;
 import ru.koChyan.Auction.service.BetService;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,22 +68,39 @@ public class PricingController {
             model.addAttribute("timeLeft", betService.getTimeLeft(lot));
             model.addAttribute("lot", lot);
             model.addAttribute("pricing", pricingService.findLastThreeByLotId(lot.getId()));
+
             return "bet/addBet";
         } else {
 
             pricingService.addPrice(user, lot, bet, new Date(date));
             lotService.updateLastBet(lot, bet);
-            template.convertAndSend("/topic/greetings", new PricingResponse(HtmlUtils.htmlEscape(String.valueOf(bet))));
+
+            Map<String, String> pricingJson = new HashMap<>();
+            pricingJson.put("bet", String.valueOf(bet));
+            pricingJson.put("date", date);
+            pricingJson.put("username", user.getUsername());
+
+            template.convertAndSend(
+                    "/topic/bets/" + lot.getId(),
+                    pricingJson
+            );
 
             return "redirect:/lot/" + lot.getId() + "/bet";
         }
     }
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    public PricingResponse greeting(Pricing pricing) {
 
-        return new PricingResponse(HtmlUtils.htmlEscape((pricing.getBet()) + ""));
+    //@MessageMapping("/pricing")
+    //@SendTo("/topic/bets")
+    //public PricingResponse showLastBet(Pricing pricing) {
+    //    System.out.println(pricing.getBet());
+
+    //    return new PricingResponse(HtmlUtils.htmlEscape((pricing.getBet()) + ""));
+    //}
+
+    @Scheduled(fixedDelay = 1000)
+    public void showTimer() {
+        template.convertAndSend("/topic/timer", new TimerResponse(String.valueOf(new Date().getTime())));
     }
 
 }

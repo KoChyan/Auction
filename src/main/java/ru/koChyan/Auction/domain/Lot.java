@@ -35,12 +35,12 @@ public class Lot {
 
     @NotNull(message = "Обязательное поле")
     @Min(value = 5, message = "Значение не может быть меньше 5")
-    @Max(value = 600, message = "Значение не может быть больше 600")
+    @Max(value = 60, message = "Значение не может быть больше 60")
     private Integer timeStep;
 
     @NotNull(message = "Обязательное поле")
     @Min(value = 1, message = "Значение не может быть меньше 1")
-    @Max(value = 900000000, message = "Значение не может быть больше 900000000")
+    @Max(value = 90000000, message = "Значение не может быть больше 90.000.000")
     private Long initialBet;
 
     private Long finalBet;

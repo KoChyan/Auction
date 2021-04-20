@@ -1,14 +1,21 @@
 var stompClient = null;
 
-
 function connect() {
+
     var socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (response) {
-            showResponse(JSON.parse(response.body).content);
+
+
+        stompClient.subscribe('/topic/bets/' + getLotId(), function (pricingResponse) {
+            showPricingResponse(pricingResponse);
         });
+
+        stompClient.subscribe('/topic/timer', function (timerResponse) {
+            updateTimer(timerResponse);
+        });
+
     });
 }
 
@@ -19,17 +26,38 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sendResponse() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'bet': $("#inputBet").val()}));
+function showPricingResponse(pricingResponse) {
+    let pricing = JSON.parse(pricingResponse.body);
+
+    $("#bet").text(pricing.bet);
+    $("#username").text(pricing.username);
+
+    let date = moment(pricing.date);
+    $("#betDate").text(date.format('YYYY.MM.DD H:mm:ss'));
 }
 
-function showResponse(response) {
-    $("#bet").text(response);
+function updateTimer(timerResponse) {
+
+    let backendTimer = JSON.parse(timerResponse.body).content;
+
+    let betDateString = $("#betDate").html().toString();
+    betDateString = betDateString
+        .replaceAll('.', '-')
+        .replace(' ', 'T');
+
+    let betDate = moment(betDateString);
+    let intervalMillis = $("#interval").html() * 60000;
+    let endAuctionDate = betDate + intervalMillis;
+
+    let timeLeft = Number((endAuctionDate - backendTimer) / 1000).toFixed(0);
+
+    $("#timer").text(timeLeft);
 }
 
-$(function () {
-    $('#form').on('submit', function (e) {e.preventDefault();});
-    $( "#connect" ).click(function() {connect();});
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendResponse(); });
-});
+function getLotId() {
+    let url = window.location.pathname;
+    let urlParts = url.split('/');
+    let idIndex = urlParts.indexOf('lot') + 1;
+
+    return urlParts[idIndex];
+}

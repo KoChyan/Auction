@@ -1,6 +1,5 @@
 <#import "../parts/common.ftlh" as c>
-<@c.scriptPage "connect()">
-
+<@c.page>
     <div  class="container border">
         <div class="row" style="background-color: #f8f9fa">
             <div class="col-sm-12 text-center mb-2 py-3">
@@ -19,20 +18,20 @@
                     <div class="col">Ставка</div>
                 </div>
 
-                <div onload="connect()" class="row my-2">
-                    <div class="col">${pricing[0].getDate()?string('MM.dd HH:mm:ss')!''}</div>
-                    <div class="col">${pricing[0].getUser().getUsername()!''}</div>
+                <div class="row my-2">
+                    <div class="col" id="betDate">${pricing[0].getDate()?string('yyyy.MM.dd HH:mm:ss')!''}</div>
+                    <div class="col" id="username">${pricing[0].getUser().getUsername()!''}</div>
                     <div class="col" id="bet" style="font-size: 14pt">
                         #{pricing[0].getBet()}
                     </div>
                 </div>
 
                 <div class="mb-3" style="font-size: 14pt">
-                    Максимальный интервал между ставками, минут: ${lot.getTimeStep()}
+                    Максимальный интервал между ставками, минут: <span id="interval">${lot.getTimeStep()}</span>
                 </div>
                 <#if timeLeft??>
                     <div class="mt-5 mb-2" style="font-size: 14pt">
-                        До окончания приема ставок, секунд: ${timeLeft}
+                        До окончания приема ставок, секунд: <span id="timer"></span>
                     </div>
                 </#if>
                 <#if timeBefore??>
@@ -68,5 +67,5 @@
         </div>
         <div class="row" style="height:25px;    background-color: #f8f9fa"></div>
     </div>
-</@c.scriptPage>
+</@c.page>
 

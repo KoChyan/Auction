@@ -1,4 +1,4 @@
-<#macro scriptPage script>
+<#macro scriptPage onloadScript>
     <!DOCTYPE html>
     <html lang="en" xmlns="http://www.w3.org/1999/html">
     <head>
@@ -17,12 +17,17 @@
         <!-- reCaptcha -->
         <script src="https://www.google.com/recaptcha/api.js"></script>
 
+        <!-- WebSocket -->
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <script src="/static/js/ws/pricing.js"></script>
+
+        <!-- moment.js -->
+        <script src="/static/js/libs/moment.min.js"></script>
+
     </head>
-    <body onload=${script}>
+    <body onload=${onloadScript}>
     <#include "navbar.ftlh">
     <div class="container my-5">
         <#nested>
@@ -40,6 +45,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
             integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
             crossorigin="anonymous"></script>
+
 
     <!--My scripts -->
 
@@ -80,7 +86,7 @@
         <script src="https://www.google.com/recaptcha/api.js"></script>
 
     </head>
-    <body onload=${script}>
+    <body>
     <#include "navbar.ftlh">
     <div class="container my-5">
         <#nested>
