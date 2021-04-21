@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.User;
+import ru.koChyan.Auction.domain.dto.LotDto;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
 
@@ -52,7 +52,7 @@ public class LotController {
     public String add(
             @AuthenticationPrincipal User user,
             @RequestParam(name = "startTime") String startTime,
-            @Valid Lot lot,
+            @Valid LotDto lotDto,
             BindingResult bindingResult,
             Model model,
             @RequestParam(name = "file") MultipartFile file
@@ -65,11 +65,11 @@ public class LotController {
             Map<String, List<String>> errorsMap = ControllerUtils.getErrors(bindingResult);
 
             model.mergeAttributes(errorsMap);
-            model.addAttribute("lot", lot);
+            model.addAttribute("lot", lotDto);
             return "lot/addLot";
         }
 
-        lotService.addLot(user, lot, file);
+        lotService.addLot(user, lotDto, file);
         return "redirect:/lot";
     }
 

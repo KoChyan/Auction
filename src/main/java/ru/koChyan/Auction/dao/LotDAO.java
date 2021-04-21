@@ -1,5 +1,6 @@
 package ru.koChyan.Auction.dao;
 
+import com.google.common.base.Strings;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.koChyan.Auction.domain.Lot;
@@ -22,7 +23,8 @@ public class LotDAO {
     @Transactional
     public void updateLastBet(Long lotId, Long bet) {
 
-        String query = "UPDATE lot SET lot.final_bet = :bet WHERE lot.id = :id";
+        String query = "UPDATE lot SET lot.final_bet = :bet " +
+                "WHERE lot.id = :id";
 
         em.createNativeQuery(query)
                 .setParameter("bet", bet)
@@ -37,12 +39,15 @@ public class LotDAO {
         Root<Lot> root = criteria.from(Lot.class);
         Predicate predicate = cb.conjunction();
 
-        if (filterName != null && !filterName.trim().isEmpty()) {
+        if (!Strings.isNullOrEmpty(filterName)) {
             predicate = cb.and(cb.equal(root.get("name"), filterName));
         }
-        if (filterDescription != null && !filterDescription.trim().isEmpty()) {
-            predicate.getExpressions().add(cb.like(root.get("description"), filterDescription));
+        if (!Strings.isNullOrEmpty(filterDescription)) {
+            predicate.getExpressions().add(cb.like(root.get("description"), "%" + filterDescription + "%"));
         }
+
+        //выводить только лоты со статусом "active"
+        predicate.getExpressions().add(cb.equal(root.get("status"), "ACTIVE"));
 
         criteria.where(predicate);
         return em.createQuery(criteria).getResultList();
@@ -57,5 +62,20 @@ public class LotDAO {
         return (User) em.createQuery(query)
                 .setParameter("lotId", lotId)
                 .getSingleResult();
+    }
+
+    @Transactional
+    public void updateStatus(Long id, String status) {
+
+        if(!Strings.isNullOrEmpty(status)){
+
+            String query = "UPDATE lot SET lot.status = :status " +
+                    "WHERE lot.id = :id";
+
+            em.createNativeQuery(query)
+                    .setParameter("status", status)
+                    .setParameter("id", id)
+                    .executeUpdate();
+        }
     }
 }

@@ -26,6 +26,13 @@ function disconnect() {
     console.log("Disconnected");
 }
 
+function sendStatus(status) {
+    stompClient.send("/app/pricing", {}, JSON.stringify({
+        'id': getLotId(),
+        'status': status
+    }));
+}
+
 function showPricingResponse(pricingResponse) {
     let pricing = JSON.parse(pricingResponse.body);
 
@@ -38,7 +45,7 @@ function showPricingResponse(pricingResponse) {
 
 function updateTimer(timerResponse) {
 
-    let backendTimer = JSON.parse(timerResponse.body).content;
+    let backendTime = JSON.parse(timerResponse.body).content;
 
     let betDateString = $("#betDate").html().toString();
     betDateString = betDateString
@@ -49,9 +56,15 @@ function updateTimer(timerResponse) {
     let intervalMillis = $("#interval").html() * 60000;
     let endAuctionDate = betDate + intervalMillis;
 
-    let timeLeft = Number((endAuctionDate - backendTimer) / 1000).toFixed(0);
+    let timeLeft = Number((endAuctionDate - backendTime) / 1000).toFixed(0);
 
     $("#timer").text(timeLeft);
+
+    if (timeLeft <= 270) {
+        sendStatus('finished');
+        window.location.href = location.href;
+    }
+
 }
 
 function getLotId() {

@@ -1,12 +1,13 @@
-package ru.koChyan.Auction.domain.response;
+package ru.koChyan.Auction.domain.dto;
 
-public class PricingResponse {
+public class TimerResponseDto {
     private String content;
 
-    public PricingResponse() {
+
+    public TimerResponseDto() {
     }
 
-    public PricingResponse(String content) {
+    public TimerResponseDto(String content) {
         this.content = content;
     }
 

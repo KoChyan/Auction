@@ -9,7 +9,6 @@ import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.repos.PricingRepo;
 
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class PricingService {
@@ -31,10 +30,6 @@ public class PricingService {
         pricingRepo.save(pricing);
     }
 
-    public List<Pricing> findLastThreeByLotId(Long id) {
-        return pricingRepo.findLastThreeByLotId(id);
-    }
-
     public void addPrice(User user, Lot lot, Long bet, Date date) {
         Pricing pricing = new Pricing();
 
@@ -46,8 +41,7 @@ public class PricingService {
         pricingRepo.save(pricing);
     }
 
-    public Date getLastPricingDateByLotId(Long id){
-        return pricingDAO.getLastPricingDateByLotId(id);
+    public Pricing getLastByLotId(Long id) {
+        return pricingRepo.findFirstByLotIdOrderByDateDesc(id);
     }
-
 }

@@ -1,6 +1,5 @@
 <#import "../parts/common.ftlh" as c>
 <@c.scriptPage "connect()">
-
     <div  class="container border">
         <div class="row" style="background-color: #f8f9fa">
             <div class="col-sm-12 text-center mb-2 py-3">
@@ -20,15 +19,15 @@
                 </div>
 
                 <div class="row my-2">
-                    <div class="col" id="betDate">${pricing[0].getDate()?string('yyyy.MM.dd HH:mm:ss')!''}</div>
-                    <div class="col" id="username">${pricing[0].getUser().getUsername()!''}</div>
+                    <div class="col" id="betDate">${pricing.getDate()?string('yyyy.MM.dd HH:mm:ss')!''}</div>
+                    <div class="col" id="username">${pricing.getUser().getUsername()!''}</div>
                     <div class="col" id="bet" style="font-size: 14pt">
-                        #{pricing[0].getBet()}
+                        #{pricing.getBet()!''}
                     </div>
                 </div>
 
                 <div class="mb-3" style="font-size: 14pt">
-                    Максимальный интервал между ставками, минут: <span id="interval">${lot.getTimeStep()}</span>
+                    Максимальный интервал между ставками, минут: <span id="interval">${lot.getTimeStep()!''}</span>
                 </div>
                 <#if timeLeft??>
                     <div class="mt-5 mb-2" style="font-size: 14pt">
@@ -68,5 +67,6 @@
         </div>
         <div class="row" style="height:25px;    background-color: #f8f9fa"></div>
     </div>
+
 </@c.scriptPage>
 

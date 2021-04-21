@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
-import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.domain.dto.CaptchaResponseDto;
+import ru.koChyan.Auction.domain.dto.UserDto;
 import ru.koChyan.Auction.service.UserService;
 
 import javax.validation.Valid;
@@ -45,7 +45,7 @@ public class RegistrationController {
     public String addUser(
             @RequestParam("g-recaptcha-response") String captchaResponse,
             Model model,
-            @Valid User user,
+            @Valid UserDto userDto,
             BindingResult bindingResult
     ) {
 
@@ -60,13 +60,13 @@ public class RegistrationController {
             Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
             model.mergeAttributes(errors);
-            model.addAttribute("user", user);
+            model.addAttribute("user", userDto);
 
             return "registration";
         } else {
             //Если при добавлении пользователя произойдет ошибка (получим false)
             //То оповестим ою этом
-            if (!userService.addUser(user)) {
+            if (!userService.addUser(userDto)) {
                 model.addAttribute("usernameError", Arrays.asList("Имя пользователя уже занято"));
                 return "registration";
             }

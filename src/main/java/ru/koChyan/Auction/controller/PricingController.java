@@ -1,6 +1,8 @@
 package ru.koChyan.Auction.controller;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,8 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.koChyan.Auction.domain.Lot;
+import ru.koChyan.Auction.domain.Status;
 import ru.koChyan.Auction.domain.User;
-import ru.koChyan.Auction.domain.response.TimerResponse;
+import ru.koChyan.Auction.domain.dto.LotStatusResponseDto;
+import ru.koChyan.Auction.domain.dto.TimerResponseDto;
 import ru.koChyan.Auction.service.BetService;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
@@ -38,16 +42,20 @@ public class PricingController {
 
 
     @GetMapping()
-    public String betsList(
+    public String betList(
             @PathVariable Lot lot,
             Model model
     ) {
+        if (lot.getStatus().equals("ACTIVE")) {
 
-        model.addAttribute("timeBefore", betService.getTimeBefore(lot));
-        model.addAttribute("timeLeft", betService.getTimeLeft(lot));
-        model.addAttribute("lot", lot);
-        model.addAttribute("pricing", pricingService.findLastThreeByLotId(lot.getId()));
-        return "bet/addBet";
+            model.addAttribute("timeBefore", betService.getTimeBefore(lot));
+            model.addAttribute("timeLeft", betService.getTimeLeft(lot));
+            model.addAttribute("lot", lot);
+            model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
+            return "bet/addBet";
+        }
+
+        return "redirect:/lot";
     }
 
     @PostMapping()
@@ -67,7 +75,7 @@ public class PricingController {
             model.addAttribute("timeBefore", betService.getTimeBefore(lot));
             model.addAttribute("timeLeft", betService.getTimeLeft(lot));
             model.addAttribute("lot", lot);
-            model.addAttribute("pricing", pricingService.findLastThreeByLotId(lot.getId()));
+            model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
 
             return "bet/addBet";
         } else {
@@ -75,33 +83,35 @@ public class PricingController {
             pricingService.addPrice(user, lot, bet, new Date(date));
             lotService.updateLastBet(lot, bet);
 
-            Map<String, String> pricingJson = new HashMap<>();
-            pricingJson.put("bet", String.valueOf(bet));
-            pricingJson.put("date", date);
-            pricingJson.put("username", user.getUsername());
+            Map<String, String> pricing = new HashMap<>();
+            pricing.put("bet", String.valueOf(bet));
+            pricing.put("date", date);
+            pricing.put("username", user.getUsername());
 
             template.convertAndSend(
                     "/topic/bets/" + lot.getId(),
-                    pricingJson
+                    pricing
             );
 
             return "redirect:/lot/" + lot.getId() + "/bet";
         }
     }
 
+    @MessageMapping("/pricing")
+    public void showLastBet(
+            String responseJson
+    ) {
 
-    //@MessageMapping("/pricing")
-    //@SendTo("/topic/bets")
-    //public PricingResponse showLastBet(Pricing pricing) {
-    //    System.out.println(pricing.getBet());
+        LotStatusResponseDto lotStatusResponseDto = new Gson().fromJson(responseJson, LotStatusResponseDto.class);
 
-    //    return new PricingResponse(HtmlUtils.htmlEscape((pricing.getBet()) + ""));
-    //}
+        if (lotStatusResponseDto.getStatus().equals("finished")) {
+           lotService.updateStatus(lotStatusResponseDto.getId(), Status.FINISHED.name());
+        }
+    }
 
     @Scheduled(fixedDelay = 1000)
     public void showTimer() {
-        template.convertAndSend("/topic/timer", new TimerResponse(String.valueOf(new Date().getTime())));
+        template.convertAndSend("/topic/timer", new TimerResponseDto(String.valueOf(new Date().getTime())));
     }
 
 }
-

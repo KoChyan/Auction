@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.koChyan.Auction.dao.UserDAO;
 import ru.koChyan.Auction.domain.Role;
 import ru.koChyan.Auction.domain.User;
+import ru.koChyan.Auction.domain.dto.UserDto;
 import ru.koChyan.Auction.repos.UserRepo;
 
 import java.util.*;
@@ -40,8 +41,8 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public boolean addUser(User user) {
-        User userFromDb = userRepo.findByUsername(user.getUsername());
+    public boolean addUser(UserDto userDto) {
+        User userFromDb = userRepo.findByUsername(userDto.getUsername());
 
         //Если пользователь c таким username уже есть в БД, сообщаем об ошибке
         if (userFromDb != null) {
@@ -49,12 +50,19 @@ public class UserService implements UserDetailsService {
         }
 
         //Если пользователь с таким email уже есть в БД, сообщаем об ошибке
-        userFromDb = userRepo.findByEmail(user.getEmail());
+        userFromDb = userRepo.findByEmail(userDto.getEmail());
         if (userFromDb != null) {
             return false;
         }
 
         //иначе создаем пользователя
+        User user = new User();
+
+        //перепишем значения с userDto
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
+        user.setEmail(userDto.getEmail());
+
         user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
         user.setBalance(0L);

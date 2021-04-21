@@ -10,7 +10,7 @@ CREATE TABLE lot
 (
     id          BIGINT        NOT NULL,
     name        VARCHAR(255)  NOT NULL,
-    description VARCHAR(2048) NOT NULL,
+    description VARCHAR(2048),
     start_time  DATETIME      NOT NULL,
     end_time    DATETIME,
     time_step   INT,

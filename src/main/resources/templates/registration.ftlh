@@ -5,9 +5,9 @@
     </div>
     <form method="post" action="/registration">
         <div class="form-group row my-3">
-            <label class="col-sm-2 col-form-label">Email</label>
+            <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control  ${(emailError??)?string('is-invalid', '')}"
+                <input type="text" class="form-control  ${(emailError??)?string('is-invalid', '')}" id="inputEmail"
                        placeholder="example@gmail.com" value="<#if user??>${user.getEmail()!''}</#if>"
                        name="email"/>
                 <#if emailError??>
@@ -36,9 +36,9 @@
             </div>
         </div>
         <div class="form-group row my-3">
-            <label class="col-sm-2 col-form-label">Password</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-5">
-                <input type="password" class="form-control ${(passwordError??)?string('is-invalid', '')}"
+                <input type="password" class="form-control ${(passwordError??)?string('is-invalid', '')}" id="inputPassword"
                        placeholder="Enter password"
                        name="password"/>
                 <#if passwordError??>

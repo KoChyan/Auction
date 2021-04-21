@@ -1,12 +1,6 @@
 package ru.koChyan.Auction.domain;
 
-import org.hibernate.validator.constraints.Length;
-
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -21,26 +15,16 @@ public class Lot {
     @JoinColumn(name = "user_id")
     private User creator;
 
-    @NotBlank(message = "Обязательное поле")
-    @Length(max = 64, message = "Слишком длинное название")
     private String name;
 
-    @NotBlank(message = "Обязательное поле")
-    @Length(max = 1024, message = "Слишком длинное описание")
     private String description;
 
     private Date startTime;
 
     private Date endTime;
 
-    @NotNull(message = "Обязательное поле")
-    @Min(value = 5, message = "Значение не может быть меньше 5")
-    @Max(value = 60, message = "Значение не может быть больше 60")
     private Integer timeStep;
 
-    @NotNull(message = "Обязательное поле")
-    @Min(value = 1, message = "Значение не может быть меньше 1")
-    @Max(value = 90000000, message = "Значение не может быть больше 90.000.000")
     private Long initialBet;
 
     private Long finalBet;

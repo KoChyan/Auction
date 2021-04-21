@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koChyan.Auction.dao.LotDAO;
 import ru.koChyan.Auction.domain.Lot;
+import ru.koChyan.Auction.domain.Status;
 import ru.koChyan.Auction.domain.User;
+import ru.koChyan.Auction.domain.dto.LotDto;
 import ru.koChyan.Auction.repos.LotRepo;
 
 import java.io.File;
@@ -33,17 +35,26 @@ public class LotService {
         if (
                 (filterName == null || filterName.trim().isEmpty()) &&
                         (filterDescription == null || filterDescription.trim().isEmpty())
-        )return lotRepo.findAll();
+        ) return lotRepo.findAllByStatus("active");
 
-            return lotDAO.findByFilter(filterName, filterDescription);
+        return lotDAO.findByFilter(filterName, filterDescription);
     }
 
-    public void addLot(User user, Lot lot, MultipartFile file) throws IOException {
+    public void addLot(User user, LotDto lotDto, MultipartFile file) throws IOException {
+
+        Lot lot = new Lot();
+
+        //перепишем валидируемые поля из lotDto
+        lot.setName(lotDto.getName());
+        lot.setDescription(lotDto.getDescription());
+        lot.setTimeStep(lotDto.getTimeStep());
+        lot.setInitialBet(lotDto.getInitialBet());
+        lot.setStartTime(lotDto.getStartTime());
 
         lot.setStatus("");
         lot.setCreator(user);
         lot.setFinalBet(lot.getInitialBet());
-
+        lot.setStatus(Status.ACTIVE.name());
 
         //если из формы был получен файл
         if (file != null && !file.getOriginalFilename().isEmpty()) {
@@ -89,5 +100,9 @@ public class LotService {
 
     public Iterable<Lot> findByName(String filter) {
         return lotRepo.findByName(filter);
+    }
+
+    public void updateStatus(Long lotId, String status){
+       lotDAO.updateStatus(lotId, status);
     }
 }

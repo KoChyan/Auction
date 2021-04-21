@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface LotRepo extends JpaRepository<Lot, Long> {
     List<Lot> findByName(String name);
-
+    List<Lot> findAllByStatus(String status);
     Optional<Lot> findById(Long id);
 }
