@@ -1,4 +1,4 @@
-var stompClient = null;
+let stompClient = null;
 
 function connect() {
 
@@ -60,9 +60,9 @@ function updateTimer(timerResponse) {
 
     $("#timer").text(timeLeft);
 
-    if (timeLeft <= 1) {
-        sendStatus('finished');
-        location.reload();
+    if (timeLeft <= 0) {
+        sendStatus('FINISHED');
+        location.reload(); // перезагрузка для обновления страницы (редиректа со страницы торгов, т.к. они завершились)
     }
 }
 

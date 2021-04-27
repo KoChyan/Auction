@@ -1,4 +1,4 @@
-package ru.koChyan.Auction.domain.dto;
+package ru.koChyan.Auction.domain.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

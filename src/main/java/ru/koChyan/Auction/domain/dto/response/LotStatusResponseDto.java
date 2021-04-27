@@ -1,4 +1,4 @@
-package ru.koChyan.Auction.domain.dto;
+package ru.koChyan.Auction.domain.dto.response;
 
 public class LotStatusResponseDto {
     private Long id;

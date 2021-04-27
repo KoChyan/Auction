@@ -28,8 +28,9 @@ public class LotController {
     @Autowired
     private LotValidator lotValidator;
 
-    @InitBinder()
-    private void initBinder(WebDataBinder binder){
+
+    @InitBinder("lotDto")
+    private void initBinder(WebDataBinder binder) {
         binder.addValidators(lotValidator);
     }
 
@@ -40,10 +41,10 @@ public class LotController {
             @RequestParam(name = "description", required = false, defaultValue = "") String byDescription
     ) {
 
+        lotService.updateStatus(); // обновить статус у уже завершивших свой срок действия лотов
         model.addAttribute("lots", lotService.getAllByFilter(byName, byDescription));
         return "lot/lotList";
     }
-
 
     @GetMapping("/add")
     public String getLotForm() {
@@ -54,7 +55,6 @@ public class LotController {
     @PostMapping("/add")
     public String addLot(
             @AuthenticationPrincipal User user,
-            @RequestParam(name = "startTime") String startTime,
             @Valid LotDto lotDto,
             BindingResult bindingResult,
             Model model,
@@ -68,10 +68,10 @@ public class LotController {
             model.mergeAttributes(errorsMap);
             model.addAttribute("lot", lotDto);
             return "lot/addLot";
+        } else {
+            lotService.addLot(user, lotDto, file);
+            return "redirect:/lot";
         }
-
-        lotService.addLot(user, lotDto, file);
-        return "redirect:/lot";
     }
 
 

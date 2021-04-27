@@ -55,6 +55,7 @@
                                 </#list>
                             </#if>
                         </div>
+                        <input type="hidden" name="lotId" value="${lot.getId()}">
                         <input type="hidden" name="date" id="hiddenDate">
                         <input type="hidden" name="_csrf" value="${_csrf.token}">
                         <button type="submit" class="btn btn-outline-secondary px-2 mx-2" style="height: 2.4rem; width: 8rem"

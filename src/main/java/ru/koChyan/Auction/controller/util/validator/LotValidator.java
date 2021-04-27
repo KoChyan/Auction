@@ -1,9 +1,9 @@
 package ru.koChyan.Auction.controller.util.validator;
 
 import org.springframework.stereotype.Component;
-import org.springframework.validation.*;
-import ru.koChyan.Auction.domain.Lot;
-import ru.koChyan.Auction.domain.Pricing;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 import ru.koChyan.Auction.domain.dto.LotDto;
 
 import java.util.Date;
@@ -23,31 +23,6 @@ public class LotValidator implements Validator {
     private static final int MINIMUM_TIME_STEP = 5; // minutes
     private static final int MAXIMUM_TIME_STEP = 60; // minutes
 
-
-    public static BindingResult justGreater(Lot lot, Long bet) {
-
-        BindingResult bindingResult = new BeanPropertyBindingResult(Pricing.class, "pricing");
-
-        //если аукцион еще не начался
-        if (lot.getStartTime().after(new Date())) {
-            bindingResult.addError(new FieldError(
-                    "pricing",
-                    "bet",
-                    "Дождитесь начала аукциона"
-            ));
-        }
-
-        //если предложенная ставка <= уже существующей для этого лота
-        if (bet <= lot.getFinalBet()) {
-            bindingResult.addError(new FieldError(
-                    "pricing",
-                    "bet",
-                    "Ставки не могут уменьшаться"
-            ));
-        }
-        return bindingResult;
-    }
-
     @Override
     public boolean supports(Class<?> clazz) {
         return LotDto.class.equals(clazz);
@@ -55,6 +30,7 @@ public class LotValidator implements Validator {
 
     @Override
     public void validate(Object obj, Errors errors) {
+
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "name.empty", "Обязательное поле");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "description.empty", "Обязательное поле");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "initialBet", "initialBet.empty", "Обязательное поле");

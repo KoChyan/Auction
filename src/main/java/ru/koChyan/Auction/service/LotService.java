@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -107,11 +108,30 @@ public class LotService {
         return lotRepo.findAll();
     }
 
-    public Iterable<Lot> findByName(String filter) {
-        return lotRepo.findByName(filter);
+    public Optional<Lot> getById(Long id) {
+        return lotRepo.findById(id);
     }
 
-    public void updateStatus(Long lotId, String status){
-       lotDAO.updateStatus(lotId, status);
+    public void setStatus(Long lotId, String status) {
+        lotDAO.setStatus(lotId, status);
+    }
+
+    public void updateStatus() {
+        lotDAO.updateStatus();
+    }
+
+    public void finish(Long id) {
+        Optional<Lot> optionalLot = lotRepo.findById(id);
+
+        if (optionalLot.isPresent()) {
+
+            Lot lot = optionalLot.get();
+            lot.setStatus(Status.FINISHED.name());
+
+            Date endDate = new Date(pricingService.getLastByLotId(id).getDate().getTime() + lot.getTimeStep() * 60000);
+
+            lot.setEndTime(endDate);
+            lotRepo.save(lot);
+        }
     }
 }

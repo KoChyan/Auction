@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.koChyan.Auction.domain.Lot;
+import ru.koChyan.Auction.domain.Status;
 import ru.koChyan.Auction.domain.User;
 
 import javax.persistence.EntityManager;
@@ -65,7 +66,7 @@ public class LotDAO {
     }
 
     @Transactional
-    public void updateStatus(Long id, String status) {
+    public void setStatus(Long id, String status) {
 
         if(!Strings.isNullOrEmpty(status)){
 
@@ -77,5 +78,17 @@ public class LotDAO {
                     .setParameter("id", id)
                     .executeUpdate();
         }
+    }
+
+    @Transactional
+    public void updateStatus(){
+        String query = "UPDATE lot SET lot .status = :newStatus " +
+                "WHERE lot.end_time <= DATE(NOW()) " +
+                "AND lot.status = :oldStatus";
+
+        em.createNativeQuery(query)
+                .setParameter("newStatus", Status.FINISHED.name())
+                .setParameter("oldStatus", Status.ACTIVE.name())
+                .executeUpdate();
     }
 }
