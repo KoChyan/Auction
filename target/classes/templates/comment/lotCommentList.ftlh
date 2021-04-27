@@ -28,7 +28,7 @@
                     <p class="text-break">${comment.getText()!''}</p>
                 </div>
                 <div class="col-sm-1">
-                    <#if isAdmin??>
+                    <#if isAdmin>
                         <form method="post" action="/lot/${lot.getId()!''}/comment/${comment.getId()!''}/delete">
                             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-outline-danger btn-sm">Х</button>

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import ru.koChyan.Auction.controller.util.ControllerUtils;
 import ru.koChyan.Auction.domain.dto.CaptchaResponseDto;
 import ru.koChyan.Auction.domain.dto.UserDto;
 import ru.koChyan.Auction.service.UserService;
@@ -65,9 +66,9 @@ public class RegistrationController {
             return "registration";
         } else {
             //Если при добавлении пользователя произойдет ошибка (получим false)
-            //То оповестим ою этом
+            //то оповестим об этом
             if (!userService.addUser(userDto)) {
-                model.addAttribute("usernameError", Arrays.asList("Имя пользователя уже занято"));
+                model.addAttribute("usernameError", Arrays.asList("Ошибка при добавлении пользователя"));
                 return "registration";
             }
             model.addAttribute("message", "Перейдите по ссылке из письма на вашей почте для активации аккаунта");

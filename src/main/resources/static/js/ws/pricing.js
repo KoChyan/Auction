@@ -62,9 +62,8 @@ function updateTimer(timerResponse) {
 
     if (timeLeft <= 1) {
         sendStatus('finished');
-        window.location.href = location.href;
+        location.reload();
     }
-
 }
 
 function getLotId() {

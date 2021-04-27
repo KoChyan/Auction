@@ -1,4 +1,4 @@
-package ru.koChyan.Auction.controller;
+package ru.koChyan.Auction.controller.util;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

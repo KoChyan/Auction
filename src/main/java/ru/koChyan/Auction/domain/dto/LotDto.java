@@ -1,34 +1,12 @@
 package ru.koChyan.Auction.domain.dto;
 
-import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
-
 public class LotDto {
 
-    @NotBlank(message = "Обязательное поле")
-    @Length(max = 64, message = "Слишком длинное название")
     private String name;
-
-    @NotBlank(message = "Обязательное поле")
-    @Length(max = 1024, message = "Слишком длинное описание")
     private String description;
-
-    @NotNull(message = "Обязательное поле")
-    @Min(value = 5, message = "Значение не может быть меньше 5")
-    @Max(value = 60, message = "Значение не может быть больше 60")
     private Integer timeStep;
-
-    @NotNull(message = "Обязательное поле")
-    @Min(value = 1, message = "Значение не может быть меньше 1")
-    @Max(value = 90000000, message = "Значение не может быть больше 90.000.000")
     private Long initialBet;
-
-    private Date startTime;
+    private String startTime;
 
 
     public LotDto() {
@@ -66,11 +44,11 @@ public class LotDto {
         this.initialBet = initialBet;
     }
 
-    public Date getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 }

@@ -5,18 +5,16 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.koChyan.Auction.controller.util.ControllerUtils;
+import ru.koChyan.Auction.controller.util.validator.LotValidator;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.domain.dto.LotDto;
 import ru.koChyan.Auction.service.LotService;
-import ru.koChyan.Auction.service.PricingService;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,37 +26,40 @@ public class LotController {
     private LotService lotService;
 
     @Autowired
-    private PricingService pricingService;
+    private LotValidator lotValidator;
+
+    @InitBinder()
+    private void initBinder(WebDataBinder binder){
+        binder.addValidators(lotValidator);
+    }
 
     @GetMapping
-    public String listLots(
+    public String lotList(
             Model model,
-            @RequestParam(name = "name", required = false, defaultValue = "") String filterByName,
-            @RequestParam(name = "description", required = false, defaultValue = "") String filterByDescription
+            @RequestParam(name = "name", required = false, defaultValue = "") String byName,
+            @RequestParam(name = "description", required = false, defaultValue = "") String byDescription
     ) {
 
-        model.addAttribute("lots", lotService.findByFilter(filterByName, filterByDescription));
+        model.addAttribute("lots", lotService.getAllByFilter(byName, byDescription));
         return "lot/lotList";
     }
 
 
     @GetMapping("/add")
-    public String getLotForm(Model model) {
+    public String getLotForm() {
 
         return "lot/addLot";
     }
 
     @PostMapping("/add")
-    public String add(
+    public String addLot(
             @AuthenticationPrincipal User user,
             @RequestParam(name = "startTime") String startTime,
             @Valid LotDto lotDto,
             BindingResult bindingResult,
             Model model,
             @RequestParam(name = "file") MultipartFile file
-    ) throws IOException {
-
-        bindingResult = Validator.justFuture(startTime, bindingResult);
+    ) {
 
         //если есть ошибки при вводе данных
         if (bindingResult.hasErrors()) {

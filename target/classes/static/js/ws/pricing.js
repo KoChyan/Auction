@@ -60,11 +60,10 @@ function updateTimer(timerResponse) {
 
     $("#timer").text(timeLeft);
 
-    if (timeLeft <= 270) {
+    if (timeLeft <= 1) {
         sendStatus('finished');
-        window.location.href = location.href;
+        location.reload();
     }
-
 }
 
 function getLotId() {

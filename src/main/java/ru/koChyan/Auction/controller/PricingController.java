@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.koChyan.Auction.controller.util.ControllerUtils;
+import ru.koChyan.Auction.controller.util.validator.LotValidator;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.Status;
 import ru.koChyan.Auction.domain.User;
@@ -46,6 +48,8 @@ public class PricingController {
             @PathVariable Lot lot,
             Model model
     ) {
+        // если лот не имеет статус "активен"
+        // то редиректим со страницы торгов этого лота на главную
         if (lot.getStatus().equals("ACTIVE")) {
 
             model.addAttribute("timeBefore", betService.getTimeBefore(lot));
@@ -66,7 +70,7 @@ public class PricingController {
             @RequestParam(name = "date") String date,
             Model model
     ) {
-        BindingResult bindingResult = Validator.justGreater(lot, bet);
+        BindingResult bindingResult = LotValidator.justGreater(lot, bet);
 
         if (bindingResult.hasErrors()) {
             Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
@@ -88,25 +92,20 @@ public class PricingController {
             pricing.put("date", date);
             pricing.put("username", user.getUsername());
 
-            template.convertAndSend(
-                    "/topic/bets/" + lot.getId(),
-                    pricing
-            );
+            template.convertAndSend("/topic/bets/" + lot.getId(), pricing);
 
             return "redirect:/lot/" + lot.getId() + "/bet";
         }
     }
 
     @MessageMapping("/pricing")
-    public void showLastBet(
+    public void getStatusUpdate(
             String responseJson
     ) {
-
         LotStatusResponseDto lotStatusResponseDto = new Gson().fromJson(responseJson, LotStatusResponseDto.class);
 
-        if (lotStatusResponseDto.getStatus().equals("finished")) {
+        if (lotStatusResponseDto.getStatus().toLowerCase().equals("finished"))
            lotService.updateStatus(lotStatusResponseDto.getId(), Status.FINISHED.name());
-        }
     }
 
     @Scheduled(fixedDelay = 1000)

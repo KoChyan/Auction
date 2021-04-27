@@ -1,6 +1,7 @@
 package ru.koChyan.Auction.service;
 
 import net.coobird.thumbnailator.Thumbnails;
+import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import ru.koChyan.Auction.repos.LotRepo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,16 +33,15 @@ public class LotService {
     @Autowired
     private LotDAO lotDAO;
 
-    public List<Lot> findByFilter(String filterName, String filterDescription) {
-        if (
-                (filterName == null || filterName.trim().isEmpty()) &&
-                        (filterDescription == null || filterDescription.trim().isEmpty())
-        ) return lotRepo.findAllByStatus("active");
+    public List<Lot> getAllByFilter(String filterName, String filterDescription) {
+        //если оба фильтра не заданы
+        if (!Strings.isNullOrEmpty(filterName) && !Strings.isNullOrEmpty(filterDescription))
+            return lotRepo.findAllByStatus(Status.ACTIVE.name());
 
         return lotDAO.findByFilter(filterName, filterDescription);
     }
 
-    public void addLot(User user, LotDto lotDto, MultipartFile file) throws IOException {
+    public void addLot(User user, LotDto lotDto, MultipartFile file) {
 
         Lot lot = new Lot();
 
@@ -49,7 +50,7 @@ public class LotService {
         lot.setDescription(lotDto.getDescription());
         lot.setTimeStep(lotDto.getTimeStep());
         lot.setInitialBet(lotDto.getInitialBet());
-        lot.setStartTime(lotDto.getStartTime());
+        lot.setStartTime(new Date(lotDto.getStartTime()));
 
         lot.setStatus("");
         lot.setCreator(user);
@@ -71,17 +72,25 @@ public class LotService {
             //объединим uuid и название файла
             String resultFilename = uuidFile + "." + file.getOriginalFilename();
 
-            //сохраним файл по указанному пути
-            file.transferTo(new File(uploadPath + "/" + resultFilename));
 
-            //обновим значение поля filename на новое уникальное имя
-            lot.setFilename(resultFilename);
+            try {
 
-            //сохраним уменьшенную до 300px копию исходного изображения
-            Thumbnails.of(uploadPath + "/" + resultFilename)
-                    .size(300, 300)
-                    .outputQuality(0.85)
-                    .toFile(uploadPath + "/resized/300px_" + resultFilename);
+                //сохраним файл по указанному пути
+                file.transferTo(new File(uploadPath + "/" + resultFilename));
+
+                //обновим значение поля filename на новое уникальное имя
+                lot.setFilename(resultFilename);
+
+                //сохраним уменьшенную до 300px копию исходного изображения
+                Thumbnails.of(uploadPath + "/" + resultFilename)
+                        .size(300, 300)
+                        .outputQuality(0.85)
+                        .toFile(uploadPath + "/resized/300PX_" + resultFilename);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
         lotRepo.save(lot);

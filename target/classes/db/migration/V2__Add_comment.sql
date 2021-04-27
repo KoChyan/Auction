@@ -14,6 +14,6 @@ ALTER TABLE comment
         FOREIGN KEY (author_id) REFERENCES user (id);
 
 ALTER TABLE comment
-    ADD CONSTRAINT comment_lot
+    ADD CONSTRAINT comment_lot_fk
         FOREIGN KEY (lot_id) REFERENCES lot (id);
 

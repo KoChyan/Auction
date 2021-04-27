@@ -37,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .formLogin()
                     .loginPage("/login")
-                    .defaultSuccessUrl("/lot", true)
+                    .defaultSuccessUrl("/lot", true) //после успешного логина редирект на /lot
                     .permitAll()
                 .and()
                     .rememberMe()

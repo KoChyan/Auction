@@ -5,7 +5,7 @@
     </div>
 
     <div class="m-5">
-        <h5>Баланс: ${user.getBalance()!''}</h5>
+        <h5>Баланс: ${user.balance!''}</h5>
     </div>
 
     <form method="post" action="/user/profile">
