@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import ru.koChyan.Auction.controller.util.ControllerUtils;
-import ru.koChyan.Auction.domain.dto.response.CaptchaResponseDto;
 import ru.koChyan.Auction.domain.dto.UserDto;
+import ru.koChyan.Auction.domain.dto.response.CaptchaResponseDto;
 import ru.koChyan.Auction.service.UserService;
 
 import javax.validation.Valid;
@@ -53,7 +53,7 @@ public class RegistrationController {
         String url = String.format(CAPTCHA_URL, recaptchaSecret, captchaResponse);
         CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
 
-        if(!response.isSuccess()){
+        if (!response.isSuccess()) {
             model.addAttribute("captchaError", "Заполните капчу");
         }
 

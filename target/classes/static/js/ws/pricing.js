@@ -2,7 +2,7 @@ let stompClient = null;
 
 function connect() {
 
-    var socket = new SockJS('/gs-guide-websocket');
+    let socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
@@ -41,6 +41,7 @@ function showPricingResponse(pricingResponse) {
 
     let date = moment(pricing.date);
     $("#betDate").text(date.format('YYYY.MM.DD H:mm:ss'));
+
 }
 
 function updateTimer(timerResponse) {
@@ -53,17 +54,34 @@ function updateTimer(timerResponse) {
         .replace(' ', 'T');
 
     let betDate = moment(betDateString);
-    let intervalMillis = $("#interval").html() * 60000;
-    let endAuctionDate = betDate + intervalMillis;
+    let intervalMillis = $("#interval").html() * 60000; // 1 мин = 60 000 мс
+    let endAuctionDate = betDate + intervalMillis; // предполагаемая дата окончания аукциона (если не будет новых ставок)
 
-    let timeLeft = Number((endAuctionDate - backendTime) / 1000).toFixed(0);
+    let timeLeft = Number((endAuctionDate - backendTime) / 1000).toFixed(0); // осталось до конца торгов, секунд
 
-    $("#timer").text(timeLeft);
+    if (timeLeft * 1000 > intervalMillis) { //если до конца аукциона осталось > чем интервал ставки (торги еще не начались)
 
-    if (timeLeft <= 0) {
-        sendStatus('FINISHED');
-        location.reload(); // перезагрузка для обновления страницы (редиректа со страницы торгов, т.к. они завершились)
+        let secondsLeft = timeLeft % 60; // 1..59
+        let minutesLeft = (timeLeft - secondsLeft - intervalMillis / 1000) / 60 % 60; // 1..59
+        let hoursLeft = (timeLeft - minutesLeft * 60 - secondsLeft - intervalMillis / 1000) / 3600 % 60; // 1..23
+        if(hoursLeft < 6){
+            $("#timerText").text('До начала аукциона: ');
+            $("#timer").text(hoursLeft + ' ч, ' + minutesLeft + ' м, ' + secondsLeft + ' с');
+        }else{
+            $("#timerText").text('Дата начала аукциона: ');
+            $("#timer").text($("#betDate").html().toString())
+        }
+
+    } else { //если до конца аукциона осталось <= чем интервал ставки (торги в процессе)
+        $("#timerText").text('До конца аукциона: ');
+        $("#timer").text(timeLeft);
+
+        if (timeLeft <= 1) {
+            sendStatus('FINISHED');
+            location.reload();
+        }
     }
+
 }
 
 function getLotId() {

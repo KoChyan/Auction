@@ -18,14 +18,13 @@ import ru.koChyan.Auction.domain.Status;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.domain.dto.PricingDto;
 import ru.koChyan.Auction.domain.dto.response.LotStatusResponseDto;
+import ru.koChyan.Auction.domain.dto.response.PricingInfoResponse;
 import ru.koChyan.Auction.domain.dto.response.TimerResponseDto;
-import ru.koChyan.Auction.service.BetService;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
 
 import javax.validation.Valid;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,9 +37,6 @@ public class PricingController {
 
     @Autowired
     private LotService lotService;
-
-    @Autowired
-    private BetService betService;
 
     @Autowired
     private SimpMessagingTemplate template;
@@ -59,17 +55,17 @@ public class PricingController {
             @PathVariable Lot lot,
             Model model
     ) {
-        // если лот не имеет статус "активен"
-        // то редиректим со страницы торгов этого лота на главную
+
         if (lot.getStatus().equals(Status.ACTIVE.name())) {
 
-            model.addAttribute("timeBefore", betService.getTimeBefore(lot));
-            model.addAttribute("timeLeft", betService.getTimeLeft(lot));
+            model.addAttribute("timerText", pricingService.getTimerText(6, lot));
+            model.addAttribute("timerValue", pricingService.getTimerValue(6, lot));
             model.addAttribute("lot", lot);
             model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
             return "pricing/addBet";
         }
 
+        // если лот уже не активен, то редиректим со страницы торгов на главную
         return "redirect:/lot";
     }
 
@@ -86,23 +82,25 @@ public class PricingController {
             Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
             model.mergeAttributes(errors);
-            model.addAttribute("timeBefore", betService.getTimeBefore(lot));
-            model.addAttribute("timeLeft", betService.getTimeLeft(lot));
+            model.addAttribute("timerText", pricingService.getTimerText(6, lot));
+            model.addAttribute("timerValue", pricingService.getTimerValue(6, lot));
             model.addAttribute("lot", lot);
             model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
 
             return "pricing/addBet";
         } else {
 
-            pricingService.addPrice(user, lot, pricingDto.getBet(), new Date(pricingDto.getDate()));
-            lotService.updateLastBet(lot, pricingDto.getBet());
+            //если лот активен, то обновляем размер ставки
+            if (lot.getStatus().equals(Status.ACTIVE.name())) {
+                pricingService.addPrice(user, lot, pricingDto.getBet(), new Date(pricingDto.getDate()));
+                lotService.updateLastBet(lot, pricingDto.getBet());
+            }
 
-            Map<String, String> pricingInfo = new HashMap<>();
-            pricingInfo.put("bet", String.valueOf(pricingDto.getBet()));
-            pricingInfo.put("date", pricingDto.getDate());
-            pricingInfo.put("username", user.getUsername());
-
-            template.convertAndSend("/topic/bets/" + lot.getId(), pricingInfo);
+            //отправление обновленной информации о последней (актуальной) ставке на данный лот
+            template.convertAndSend(
+                    "/topic/bets/" + lot.getId(),
+                    new PricingInfoResponse(pricingDto.getBet(), pricingDto.getDate(), user.getUsername())
+            );
 
             return "redirect:/lot/" + lot.getId() + "/bet";
         }

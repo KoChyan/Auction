@@ -31,8 +31,8 @@ public class PricingValidator implements Validator {
 
         PricingDto pricingDto = (PricingDto) obj;
 
-        validateDate(pricingDto, errors); /* date >= lot.startTime */
-        validateBet(pricingDto, errors); /* bet >= lot.finalBet */
+        validateDate(pricingDto, errors); // date >= lot.startTime
+        validateBet(pricingDto, errors); // bet >= lot.finalBet
 
     }
 
@@ -43,7 +43,7 @@ public class PricingValidator implements Validator {
             if (optionalLot.isPresent()) { // если лот с таким id есть в бд
                 Lot lot = optionalLot.get();
                 if(new Date().before(lot.getStartTime())){ // если время старта торгов еще не наступило
-                    errors.rejectValue("date", "date.available", "Дождитесь начала торгов");
+                    errors.rejectValue("bet", "date.future", "Дождитесь начала торгов");
                 }
             }
         }

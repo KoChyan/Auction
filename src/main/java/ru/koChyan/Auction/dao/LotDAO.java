@@ -68,7 +68,7 @@ public class LotDAO {
     @Transactional
     public void setStatus(Long id, String status) {
 
-        if(!Strings.isNullOrEmpty(status)){
+        if (!Strings.isNullOrEmpty(status)) {
 
             String query = "UPDATE lot SET lot.status = :status " +
                     "WHERE lot.id = :id";
@@ -81,7 +81,7 @@ public class LotDAO {
     }
 
     @Transactional
-    public void updateStatus(){
+    public void updateStatus() {
         String query = "UPDATE lot SET lot .status = :newStatus " +
                 "WHERE lot.end_time <= DATE(NOW()) " +
                 "AND lot.status = :oldStatus";

@@ -1,6 +1,6 @@
 <#import "../parts/common.ftlh" as c>
 <@c.scriptPage "connect()">
-    <div  class="container border">
+    <div class="container border">
         <div class="row" style="background-color: #f8f9fa">
             <div class="col-sm-12 text-center mb-2 py-3">
                 <div class="h4">Лот: ${lot.getName()!''}</div>
@@ -29,16 +29,10 @@
                 <div class="mb-3" style="font-size: 14pt">
                     Максимальный интервал между ставками, минут: <span id="interval">${lot.getTimeStep()!''}</span>
                 </div>
-                <#if timeLeft??>
-                    <div class="mt-5 mb-2" style="font-size: 14pt">
-                        До окончания приема ставок, секунд: <span id="timer"></span>
-                    </div>
-                </#if>
-                <#if timeBefore??>
-                    <div class="mb-5" style="font-size: 14pt">
-                        До начала аукциона, секунд: ${timeBefore}
-                    </div>
-                </#if>
+                <div class="mt-5 mb-2" style="font-size: 14pt">
+                    <span id="timerText">${timerText!''}</span>
+                    <span id="timer">${timerValue!''}</span>
+                </div>
 
                 <form method="post" action="/lot/${lot.getId()}/bet">
                     <div class="form-group row mt-5 mb-3">
@@ -50,7 +44,7 @@
                             <#if betError??>
                                 <#list betError as betErr>
                                     <div class="invalid-feedback">
-                                        ${betErr}
+                                        ${betErr!''}
                                     </div>
                                 </#list>
                             </#if>
@@ -58,7 +52,8 @@
                         <input type="hidden" name="lotId" value="${lot.getId()}">
                         <input type="hidden" name="date" id="hiddenDate">
                         <input type="hidden" name="_csrf" value="${_csrf.token}">
-                        <button type="submit" class="btn btn-outline-secondary px-2 mx-2" style="height: 2.4rem; width: 8rem"
+                        <button type="submit" class="btn btn-outline-secondary px-2 mx-2"
+                                style="height: 2.4rem; width: 8rem"
                                 onclick="hiddenDateIsNow()">
                             Поставить
                         </button>
