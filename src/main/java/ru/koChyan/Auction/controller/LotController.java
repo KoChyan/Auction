@@ -1,6 +1,7 @@
 package ru.koChyan.Auction.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koChyan.Auction.controller.util.ControllerUtils;
 import ru.koChyan.Auction.controller.util.validator.LotValidator;
+import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.domain.dto.LotDto;
 import ru.koChyan.Auction.service.LotService;
@@ -72,6 +74,28 @@ public class LotController {
             lotService.addLot(user, lotDto, file);
             return "redirect:/lot";
         }
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/{lotId}/cancel")
+    public String getCancelForm(
+            @PathVariable("lotId") Lot lot,
+            Model model
+    ){
+
+        model.addAttribute("lot", lot);
+        return "lot/cancelLot";
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/{lotId}/cancel")
+    public String cancelLot(
+            @PathVariable("lotId") Lot lot,
+            @RequestParam(name = "reason", required = false, defaultValue = "") String reason
+    ) {
+
+        lotService.cancelLot(lot, reason);
+        return "redirect:/lot";
     }
 
 

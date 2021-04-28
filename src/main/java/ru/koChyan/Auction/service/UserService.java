@@ -179,7 +179,7 @@ public class UserService implements UserDetailsService {
             }
     }
 
-    public Optional<User> findById(Long id) {
+    public Optional<User> getById(Long id) {
         return userRepo.findById(id);
     }
 }

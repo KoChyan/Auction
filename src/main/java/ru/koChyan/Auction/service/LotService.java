@@ -34,6 +34,12 @@ public class LotService {
     @Autowired
     private LotDAO lotDAO;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private MailSender mailSender;
+
     public List<Lot> getAllByFilter(String filterName, String filterDescription) {
         //если оба фильтра не заданы
         if (!Strings.isNullOrEmpty(filterName) && !Strings.isNullOrEmpty(filterDescription))
@@ -112,8 +118,8 @@ public class LotService {
         return lotRepo.findById(id);
     }
 
-    public void setStatus(Long lotId, String status) {
-        lotDAO.setStatus(lotId, status);
+    public void setStatusAndSave(Long lotId, Status status) {
+        lotDAO.setStatus(lotId, status.name());
     }
 
     public void updateStatus() {
@@ -133,5 +139,27 @@ public class LotService {
             lot.setEndTime(endDate);
             lotRepo.save(lot);
         }
+    }
+
+    public void cancelLot(Lot lot, String reason) {
+        lot.setStatus(Status.CANCELED.name());
+        lot.setEndTime(new Date());
+        lotRepo.save(lot);
+
+        String emailTo = lot.getCreator().getEmail();
+        String subject = "Отмена аукциона";
+
+        String message = String.format(
+                "Здравствуйте, %s \n" +
+                        "торги за лот \"%s\" отменены\n",
+                lot.getCreator().getUsername(),
+                lot.getName()
+        );
+
+        if (!Strings.isNullOrEmpty(reason) && !reason.isBlank()) {
+            message = message + "Причина отмены: " + reason;
+        }
+
+        mailSender.send(emailTo, subject, message);
     }
 }

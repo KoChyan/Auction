@@ -1,4 +1,5 @@
 <#import "../parts/common.ftlh" as c>
+<#include "../parts/security.ftlh">
 <@c.page>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -15,6 +16,11 @@
                     <div class="card-body p-0">
                         <div class="fw-bold mt-2 text-center">
                             <p>Начало ${lot.getStartTime()?string('dd.MM.yyyy HH:mm')!''}</p>
+                            <#if isAdmin>
+                                <div class="mb-2">
+                                    <a href="/lot/${lot.getId()}/cancel">Отменить торги</a>
+                                </div>
+                            </#if>
                         </div>
                         <div class="d-grid gap-2">
                             <button class="btn btn-outline-secondary btn-sm " type="button" data-bs-toggle="collapse"

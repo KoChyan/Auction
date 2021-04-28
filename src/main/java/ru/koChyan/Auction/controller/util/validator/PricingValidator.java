@@ -37,13 +37,13 @@ public class PricingValidator implements Validator {
     }
 
     private void validateDate(PricingDto pricingDto, Errors errors) {
-        if(pricingDto.getDate() != null){
+        if (pricingDto.getDate() != null) {
             Optional<Lot> optionalLot = lotService.getById(pricingDto.getLotId());
 
             if (optionalLot.isPresent()) { // если лот с таким id есть в бд
                 Lot lot = optionalLot.get();
-                if(new Date().before(lot.getStartTime())){ // если время старта торгов еще не наступило
-                    errors.rejectValue("bet", "date.future", "Дождитесь начала торгов");
+                if (new Date().before(lot.getStartTime())) { // если время старта торгов еще не наступило
+                    errors.rejectValue("bet", "bet.date.future", "Дождитесь начала торгов");
                 }
             }
         }
