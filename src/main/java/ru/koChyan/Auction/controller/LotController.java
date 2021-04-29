@@ -1,6 +1,9 @@
 package ru.koChyan.Auction.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -39,12 +42,13 @@ public class LotController {
     @GetMapping
     public String lotList(
             Model model,
-            @RequestParam(name = "name", required = false, defaultValue = "") String byName,
-            @RequestParam(name = "description", required = false, defaultValue = "") String byDescription
+            @RequestParam(name = "name", required = false, defaultValue = "") String name,
+            @RequestParam(name = "description", required = false, defaultValue = "") String description,
+            @PageableDefault(size = 6, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
         lotService.updateStatus(); // обновить статус у уже завершивших свой срок действия лотов
-        model.addAttribute("lots", lotService.getAllByFilter(byName, byDescription));
+        model.addAttribute("lotPage", lotService.getAllByFilter(name, description, pageable));
         return "lot/lotList";
     }
 

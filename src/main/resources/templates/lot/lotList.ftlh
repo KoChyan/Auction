@@ -1,9 +1,10 @@
 <#import "../parts/common.ftlh" as c>
 <#include "../parts/security.ftlh">
+<#import "../parts/pager.ftlh" as p>
 <@c.page>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        <#list lots as lot>
+        <#list lotPage.content as lot>
             <div class="col" id="lotCol">
                 <div class="card text-wight mb-3">
                     <div class="card-header text-center">

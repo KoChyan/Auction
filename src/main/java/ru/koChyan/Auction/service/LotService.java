@@ -4,6 +4,8 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koChyan.Auction.dao.LotDAO;
@@ -40,12 +42,12 @@ public class LotService {
     @Autowired
     private MailSender mailSender;
 
-    public List<Lot> getAllByFilter(String filterName, String filterDescription) {
+    public Page<Lot> getAllByFilter(String filterName, String filterDescription, Pageable pageable) {
         //если оба фильтра не заданы
-        if (!Strings.isNullOrEmpty(filterName) && !Strings.isNullOrEmpty(filterDescription))
-            return lotRepo.findAllByStatus(Status.ACTIVE.name());
+        if (Strings.isNullOrEmpty(filterName) && Strings.isNullOrEmpty(filterDescription))
+            return lotRepo.findAllByStatus(Status.ACTIVE.name(), pageable);
 
-        return lotDAO.findByFilter(filterName, filterDescription);
+        return lotDAO.findByFilter(filterName, filterDescription, pageable);
     }
 
     public void addLot(User user, LotDto lotDto, MultipartFile file) {
@@ -130,14 +132,27 @@ public class LotService {
         Optional<Lot> optionalLot = lotRepo.findById(id);
 
         if (optionalLot.isPresent()) {
-
             Lot lot = optionalLot.get();
+
             lot.setStatus(Status.FINISHED.name());
-
             Date endDate = new Date(pricingService.getLastByLotId(id).getDate().getTime() + lot.getTimeStep() * 60000);
-
             lot.setEndTime(endDate);
             lotRepo.save(lot);
+
+            String message = String.format(
+                    "Здравствуйте, %s !\n" +
+                            "Вы выиграли торги за лот \"%s\"\n" +
+                            "---тут находится инструкция для получения лота---\n" +
+                            "1) ...\n" +
+                            "2) ...\n" +
+                            "3) ...\n" +
+                            "4) ...\n" +
+                            "5) ...\n",
+                    lot.getCreator().getUsername(),
+                    lot.getName()
+            );
+
+            mailSender.send(lot.getCreator().getEmail(), "Ambey", message);
         }
     }
 

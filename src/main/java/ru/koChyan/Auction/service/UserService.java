@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.koChyan.Auction.dao.UserDAO;
 import ru.koChyan.Auction.domain.Role;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.domain.dto.UserDto;
@@ -26,9 +25,6 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserDAO userDAO;
 
 
     @Override
@@ -74,12 +70,12 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
         //Если у пользователя есть почта и она не состоит из пробелов
         //то отправляем ему код для подтверждения аккаунта
-        sendMessage(user);
+        sendActivationCode(user);
 
         return true;
     }
 
-    private void sendMessage(User user) {
+    private void sendActivationCode(User user) {
         if (!StringUtils.isEmptyOrWhitespaceOnly(user.getEmail())) {
 
             String message = String.format(
@@ -175,7 +171,7 @@ public class UserService implements UserDetailsService {
         //и не был занят другим пользователем
         if (userFromDb == null)
             if (isEmailChanged) {
-                sendMessage(user);
+                sendActivationCode(user);
             }
     }
 

@@ -1,6 +1,9 @@
 package ru.koChyan.Auction.dao;
 
 import com.google.common.base.Strings;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.koChyan.Auction.domain.Lot;
@@ -9,11 +12,11 @@ import ru.koChyan.Auction.domain.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.List;
 
 @Component
 public class LotDAO {
@@ -33,7 +36,7 @@ public class LotDAO {
                 .executeUpdate();
     }
 
-    public List<Lot> findByFilter(String filterName, String filterDescription) {
+    public Page<Lot> findByFilter(String filterName, String filterDescription, Pageable pageable) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Lot> criteria = cb.createQuery(Lot.class);
 
@@ -51,7 +54,14 @@ public class LotDAO {
         predicate.getExpressions().add(cb.equal(root.get("status"), "ACTIVE"));
 
         criteria.where(predicate);
-        return em.createQuery(criteria).getResultList();
+
+        TypedQuery<Lot> query = em.createQuery(criteria);
+        int totalRows = query.getResultList().size();
+
+        query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        query.setMaxResults(pageable.getPageSize());
+
+        return new PageImpl<Lot>(query.getResultList(), pageable, totalRows);
     }
 
     public User findUserByLotId(Long lotId) {

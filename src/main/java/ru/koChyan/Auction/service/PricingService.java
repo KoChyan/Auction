@@ -95,4 +95,5 @@ public class PricingService {
 
         return timeLeft < xHoursInMillis && timeLeft > 0; // торги еще не начались && до начала менее xHours часов
     }
+
 }
