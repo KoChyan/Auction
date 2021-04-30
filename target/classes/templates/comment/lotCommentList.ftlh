@@ -1,5 +1,7 @@
 <#import '../parts/common.ftlh' as c>
 <#include "../parts/security.ftlh">
+<#import "../parts/pager.ftlh" as p>
+
 <@c.page>
 
     <div class="card mb-3">
@@ -15,8 +17,9 @@
                             <div class="col-sm-6">Создатель: ${lot.getCreator().getUsername()}</div>
                         </div>
                     </h5>
+                    <@p.pager url page/>
                     <p class="card-text">
-                        <#list comments as comment>
+                        <#list page.content as comment>
                         <div class="row">
                             <div class="col-sm-3">
                     <p>${comment.getDate()?string('dd.MM.yyyy HH:mm:ss')!''}</p>
@@ -33,7 +36,7 @@
                             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-outline-danger btn-sm">Х</button>
                         </form>
-                        <#else>
+                    <#else>
                     </#if>
                 </div>
             </div>

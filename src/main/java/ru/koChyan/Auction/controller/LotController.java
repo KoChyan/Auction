@@ -27,6 +27,9 @@ import java.util.Map;
 @RequestMapping("/lot")
 public class LotController {
 
+    //default size
+    private final static int PAGE_SIZE = 6;
+
     @Autowired
     private LotService lotService;
 
@@ -44,11 +47,12 @@ public class LotController {
             Model model,
             @RequestParam(name = "name", required = false, defaultValue = "") String name,
             @RequestParam(name = "description", required = false, defaultValue = "") String description,
-            @PageableDefault(size = 6, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = PAGE_SIZE, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
         lotService.updateStatus(); // обновить статус у уже завершивших свой срок действия лотов
-        model.addAttribute("lotPage", lotService.getAllByFilter(name, description, pageable));
+        model.addAttribute("url", "/lot"); //url для построения ссылок для пагинации
+        model.addAttribute("page", lotService.getAllByFilter(name, description, pageable));
         return "lot/lotList";
     }
 
@@ -85,7 +89,7 @@ public class LotController {
     public String getCancelForm(
             @PathVariable("lotId") Lot lot,
             Model model
-    ){
+    ) {
 
         model.addAttribute("lot", lot);
         return "lot/cancelLot";
@@ -101,6 +105,5 @@ public class LotController {
         lotService.cancelLot(lot, reason);
         return "redirect:/lot";
     }
-
 
 }
