@@ -1,14 +1,18 @@
 <#import "parts/common.ftlh" as c>
+<#import "/spring.ftl" as spring/>
 <@c.page>
     <div class="m-5">
         ${message!''}
     </div>
     <form method="post" action="/registration">
         <div class="form-group row my-3">
-            <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+            <label for="inputEmail" class="col-sm-2 col-form-label">
+                <@spring.message "form.label.email"/>
+            </label>
             <div class="col-sm-5">
                 <input type="text" class="form-control  ${(emailError??)?string('is-invalid', '')}" id="inputEmail"
-                       placeholder="example@gmail.com" value="<#if user??>${user.getEmail()!''}</#if>"
+                       placeholder="<@spring.message 'form.placeholder.email'/>"
+                       value="<#if user??>${user.getEmail()!''}</#if>"
                        name="email"/>
                 <#if emailError??>
                     <#list emailError as emailEr >
@@ -21,10 +25,13 @@
         </div>
 
         <div class="form-group row my-3">
-            <label for="inputUsername" class="col-sm-2 col-form-label">User name</label>
+            <label for="inputUsername" class="col-sm-2 col-form-label">
+                <@spring.message "form.label.username"/>
+            </label>
             <div class="col-sm-5">
                 <input type="text" class="form-control ${(usernameError??)?string('is-invalid', '')}" id="inputUsername"
-                       placeholder="Enter username" value="<#if user??>${user.getUsername()!''}</#if>"
+                       placeholder="<@spring.message 'form.placeholder.username'/>"
+                       value="<#if user??>${user.getUsername()!''}</#if>"
                        name="username"/>
                 <#if usernameError??>
                     <#list usernameError as usernameEr >
@@ -36,10 +43,12 @@
             </div>
         </div>
         <div class="form-group row my-3">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label">
+                <@spring.message "form.label.password"/>
+            </label>
             <div class="col-sm-5">
                 <input type="password" class="form-control ${(passwordError??)?string('is-invalid', '')}" id="inputPassword"
-                       placeholder="Enter password"
+                       placeholder="<@spring.message 'form.placeholder.password'/>"
                        name="password"/>
                 <#if passwordError??>
                     <#list passwordError as pErr >
@@ -63,7 +72,6 @@
         </div>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-
-        <button type="submit" class="btn btn-secondary my-5">Зарегистрироваться</button>
+        <button type="submit" class="btn btn-secondary my-5"><@spring.message "button.registration"/></button>
     </form>
 </@c.page>

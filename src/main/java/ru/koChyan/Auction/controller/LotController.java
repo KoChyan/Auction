@@ -84,7 +84,7 @@ public class LotController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')") // требуем права администратора для формы отмены лота
     @GetMapping("/{lotId}/cancel")
     public String getCancelForm(
             @PathVariable("lotId") Lot lot,
@@ -95,7 +95,7 @@ public class LotController {
         return "lot/cancelLot";
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')") // требуем права администратора для отмены лота
     @PostMapping("/{lotId}/cancel")
     public String cancelLot(
             @PathVariable("lotId") Lot lot,

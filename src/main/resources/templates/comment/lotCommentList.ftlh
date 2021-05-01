@@ -1,9 +1,9 @@
 <#import '../parts/common.ftlh' as c>
 <#include "../parts/security.ftlh">
 <#import "../parts/pager.ftlh" as p>
+<#import "/spring.ftl" as spring>
 
 <@c.page>
-
     <div class="card mb-3">
         <div class="row g-0">
             <div class="col-md-4">
@@ -13,11 +13,15 @@
                 <div class="card-body">
                     <h5 class="card-title">
                         <div class="row">
-                            <div class="col-sm-6">Лот: ${lot.getName()}</div>
-                            <div class="col-sm-6">Создатель: ${lot.getCreator().getUsername()}</div>
+                            <div class="col-sm-6">
+                                <@spring.message "field.lot.name"/>: ${lot.getName()}
+                            </div>
+                            <div class="col-sm-6">
+                                <@spring.message "field.lot.author"/>: ${lot.getCreator().getUsername()}
+                            </div>
                         </div>
                     </h5>
-                    <@p.pager url page/>
+                    <@p.pager url 5 10 15 20 page/>
                     <p class="card-text">
                         <#list page.content as comment>
                         <div class="row">
@@ -45,7 +49,8 @@
                 <div class="form-group row my-4">
                     <div class="col-sm-6">
                         <input type="text" class="form-control ${(textError??)?string('is-invalid', '')} "
-                               placeholder="Введите комментарий..." id="inputText"
+                               placeholder="<@spring.message 'form.placeholder.text'/>"
+                               id="inputText"
                                value="<#if comment??>${comment.getText()!''}</#if>" aria-label="With textarea"
                                name="text">
                         <#if textError??>
@@ -60,14 +65,13 @@
                     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
                     <div class="col-sm-3">
-                        <button type="submit" class="btn btn-outline-secondary px-2 mx-2">Добавить</button>
+                        <button type="submit" class="btn btn-outline-secondary px-2 mx-2">
+                            <@spring.message "button.addComment"/>
+                        </button>
                     </div>
-
                 </div>
             </form>
             </p>
         </div>
     </div>
-
-
 </@c.page>

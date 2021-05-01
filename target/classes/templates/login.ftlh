@@ -1,4 +1,5 @@
 <#import "parts/common.ftlh" as c>
+<#import "/spring.ftl" as spring/>
 <@c.page>
 
     <div class="m-5">
@@ -13,28 +14,29 @@
         </#if>
     </div>
 
-
-
     <form method="post" action="/login">
         <div class="form-group row my-3">
+            <label for="inputUsername" class="col-sm-2 col-form-label">
+                <@spring.message "form.label.username"/>
+            </label>
             <div class="col-sm-5">
                 <input type="text" class="form-control " id="inputUsername"
-                       placeholder="Enter username"
                        name="username"/>
             </div>
         </div>
         <div class="form-group row my-3">
+            <label for="inputPassword" class="col-sm-2 col-form-label">
+                <@spring.message "form.label.password"/>
+            </label>
             <div class="col-sm-5">
-                <input type="password" class="form-control"
-                       placeholder="Enter password"
+                <input type="password" class="form-control" id="inputPassword"
                        name="password"/>
-
             </div>
         </div>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
-        <a class="mx-3  my-5" href="/registration">Создать аккаунт</a>
-        <button type=submit" class="btn btn-secondary mx-4">Войти</button>
+        <a class="mx-3  my-5" href="/registration"><@spring.message "link.registration"/></a>
+        <button type="submit" class="btn btn-secondary mx-4"><@spring.message "button.login"/></button>
     </form>
 </@c.page>

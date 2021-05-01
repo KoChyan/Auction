@@ -79,7 +79,6 @@ public class PricingService {
 
             return String.valueOf(timeLeft);
         }
-
     }
 
     public boolean isMoreThanXHoursBefore(int xHoursBefore, Lot lot) {

@@ -29,6 +29,9 @@ import java.util.Map;
 @RequestMapping("/lot/{lot}/comment")
 public class CommentController {
 
+    //default size
+    private final static int PAGE_SIZE = 5;
+
     @Autowired
     private CommentService commentService;
 
@@ -56,7 +59,7 @@ public class CommentController {
             Model model,
             @Valid Comment comment,
             BindingResult bindingResult,
-            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = PAGE_SIZE, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
 
     ) {
         if (bindingResult.hasErrors()) {

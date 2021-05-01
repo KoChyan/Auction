@@ -1,9 +1,3 @@
-
-.card-img-top {
-    max-width: 300px;
-    max-height: 300px;
-}
-
 .card-header {
     height: 70px;
     font-weight: bold;
@@ -24,5 +18,15 @@
 #lotCol{
     max-width: 25rem;
     min-width: 20rem;
+}
+
+#lotImg{
+    max-width:300px;
+    max-height:300px;
+}
+
+#imgContainer{
+    width:300px;
+    height:300px;
 }
 

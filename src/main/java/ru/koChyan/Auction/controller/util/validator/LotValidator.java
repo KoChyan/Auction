@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 public class LotValidator implements Validator {
 
-    private static final int MINIMUM_NAME_LENGTH = 0; // нет ограничений на минимальную длину
+    private static final int MINIMUM_NAME_LENGTH = 3;
     private static final int MAXIMUM_NAME_LENGTH = 64;
 
     private static final int MINIMUM_DESCRIPTION_LENGTH = 0; // нет ограничений на минимальную длину

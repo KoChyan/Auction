@@ -45,7 +45,7 @@ public class LotService {
     public Page<Lot> getAllByFilter(String filterName, String filterDescription, Pageable pageable) {
         //если оба фильтра не заданы
         if (Strings.isNullOrEmpty(filterName) && Strings.isNullOrEmpty(filterDescription))
-            return lotRepo.findAllByStatus(Status.ACTIVE.name(), pageable);
+            return lotRepo.findAllByStatusOrderByStartTimeAsc(Status.ACTIVE.name(), pageable);
 
         return lotDAO.findByFilter(filterName, filterDescription, pageable);
     }

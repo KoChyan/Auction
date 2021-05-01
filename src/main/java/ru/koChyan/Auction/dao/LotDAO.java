@@ -50,13 +50,15 @@ public class LotDAO {
             predicate.getExpressions().add(cb.like(root.get("description"), "%" + filterDescription + "%"));
         }
 
-        //выводить только лоты со статусом "active"
-        predicate.getExpressions().add(cb.equal(root.get("status"), "ACTIVE"));
+        // выводить только лоты со статусом "ACTIVE"
+        predicate.getExpressions().add(cb.equal(root.get("status"), Status.ACTIVE.name()));
+
+        criteria.orderBy(cb.asc(root.get("startTime"))); // сортировка по дате, по возрастанию
 
         criteria.where(predicate);
 
         TypedQuery<Lot> query = em.createQuery(criteria);
-        int totalRows = query.getResultList().size();
+        int totalRows = query.getResultList().size(); // ра
 
         query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         query.setMaxResults(pageable.getPageSize());
