@@ -17,6 +17,7 @@ import ru.koChyan.Auction.repos.LotRepo;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -54,24 +55,24 @@ public class LotService {
 
         Lot lot = new Lot();
 
-        //перепишем валидируемые поля из lotDto
+        // перепишем валидируемые поля из lotDto
         lot.setName(lotDto.getName());
         lot.setDescription(lotDto.getDescription());
         lot.setTimeStep(lotDto.getTimeStep());
         lot.setInitialBet(lotDto.getInitialBet());
         lot.setStartTime(new Date(lotDto.getStartTime()));
-
-        lot.setStatus("");
         lot.setCreator(user);
-        lot.setFinalBet(lot.getInitialBet());
         lot.setStatus(Status.ACTIVE.name());
 
+        lot.setFinalBet(lot.getInitialBet());
+        lot.setEndTime(lot.getStartTime());
+
         //если из формы был получен файл
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
+        if (file != null && !file.getOriginalFilename().isBlank()) {
             File uploadDir = new File(uploadPath);
 
             //если директория отсутствует
-            if (uploadDir.exists()) {
+            if (uploadDir.exists() && uploadDir.isFile()) {
                 uploadDir.mkdir();
             }
 
@@ -81,25 +82,25 @@ public class LotService {
             //объединим uuid и название файла
             String resultFilename = uuidFile + "." + file.getOriginalFilename();
 
-
             try {
-
                 //сохраним файл по указанному пути
-                file.transferTo(new File(uploadPath + "/" + resultFilename));
+                file.transferTo(new File(uploadPath + File.separator + resultFilename));
 
                 //обновим значение поля filename на новое уникальное имя
                 lot.setFilename(resultFilename);
 
                 //сохраним уменьшенную до 300px копию исходного изображения
-                Thumbnails.of(uploadPath + "/" + resultFilename)
+                Thumbnails.of(uploadPath + File.separator + resultFilename)
                         .size(300, 300)
                         .outputQuality(0.85)
-                        .toFile(uploadPath + "/resized/300PX_" + resultFilename);
+                        .toFile(uploadPath + File.separator + "resized" + File.separator + "300PX_" + resultFilename);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+        }else{
+            lot.setFilename("DEFAULT.png");
         }
 
         lotRepo.save(lot);
@@ -108,8 +109,15 @@ public class LotService {
         pricingService.addPrice(user, lot);
     }
 
-    public void updateLastBet(Lot lot, Long bet) {
-        lotDAO.updateLastBet(lot.getId(), bet);
+    public void updateLastBet(Lot lot, Long bet, Date betDate) {
+        lot.setFinalBet(bet);
+
+        Date newEndTime = new Date(
+                betDate.getTime() + lot.getTimeStep() * 60000 // время ставки + интервал между ставками в мс
+        );
+
+        //обновляем предполагаемое время окончания торгов (если новых ставок не будет)
+        lot.setEndTime(newEndTime);
     }
 
     public List<Lot> getAll() {
@@ -125,6 +133,11 @@ public class LotService {
     }
 
     public void updateStatus() {
+
+        // отправка сообщения последнему ставившему (победителю)
+        for(BigInteger id : lotDAO.getLotIdToBeUpdated())
+            finish(id.longValue());
+
         lotDAO.updateStatus();
     }
 
@@ -135,7 +148,7 @@ public class LotService {
             Lot lot = optionalLot.get();
 
             lot.setStatus(Status.FINISHED.name());
-            Date endDate = new Date(pricingService.getLastByLotId(id).getDate().getTime() + lot.getTimeStep() * 60000);
+            Date endDate = new Date(pricingService.getLastByLotId(id).getDate().getTime());
             lot.setEndTime(endDate);
             lotRepo.save(lot);
 
@@ -177,4 +190,5 @@ public class LotService {
 
         mailSender.send(emailTo, subject, message);
     }
+
 }

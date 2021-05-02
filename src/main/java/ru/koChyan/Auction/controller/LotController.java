@@ -37,7 +37,7 @@ public class LotController {
     private LotValidator lotValidator;
 
 
-    @InitBinder("lotDto")
+    @InitBinder()
     private void initBinder(WebDataBinder binder) {
         binder.addValidators(lotValidator);
     }
@@ -51,7 +51,7 @@ public class LotController {
     ) {
 
         lotService.updateStatus(); // обновить статус у уже завершивших свой срок действия лотов
-        model.addAttribute("url", "/lot"); //url для построения ссылок для пагинации
+        model.addAttribute("url", "/lot"); // url для построения ссылок для пагинации
         model.addAttribute("page", lotService.getAllByFilter(name, description, pageable));
         return "lot/lotList";
     }

@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +18,6 @@ import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.domain.dto.PricingDto;
 import ru.koChyan.Auction.domain.dto.response.LotStatusResponseDto;
 import ru.koChyan.Auction.domain.dto.response.PricingInfoResponse;
-import ru.koChyan.Auction.domain.dto.response.TimerResponseDto;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
 
@@ -93,7 +91,7 @@ public class PricingController {
             //если лот активен, то обновляем размер ставки
             if (lot.getStatus().equals(Status.ACTIVE.name())) {
                 pricingService.addPrice(user, lot, pricingDto.getBet(), new Date(pricingDto.getDate()));
-                lotService.updateLastBet(lot, pricingDto.getBet());
+                lotService.updateLastBet(lot, pricingDto.getBet(), new Date(pricingDto.getDate()));
             }
 
             //отправление обновленной информации о последней (актуальной) ставке на данный лот
@@ -106,6 +104,7 @@ public class PricingController {
         }
     }
 
+
     @MessageMapping("/pricing")
     public void getStatus(String responseJson) {
         LotStatusResponseDto lotStatusResponseDto = new Gson().fromJson(responseJson, LotStatusResponseDto.class);
@@ -113,11 +112,6 @@ public class PricingController {
         if (lotStatusResponseDto.getStatus().toUpperCase().equals("FINISHED")) {
             lotService.finish(lotStatusResponseDto.getId());
         }
-    }
-
-    @Scheduled(fixedDelay = 1000)
-    public void showTimer() {
-        template.convertAndSend("/topic/timer", new TimerResponseDto(String.valueOf(new Date().getTime())));
     }
 
 }

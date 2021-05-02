@@ -17,6 +17,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class LotDAO {
@@ -95,12 +98,26 @@ public class LotDAO {
     @Transactional
     public void updateStatus() {
         String query = "UPDATE lot SET lot .status = :newStatus " +
-                "WHERE lot.end_time <= DATE(NOW()) " +
+                "WHERE lot.end_time <= :nowDate " +
                 "AND lot.status = :oldStatus";
 
         em.createNativeQuery(query)
+                .setParameter("nowDate", new Date())
                 .setParameter("newStatus", Status.FINISHED.name())
                 .setParameter("oldStatus", Status.ACTIVE.name())
                 .executeUpdate();
+    }
+
+    @Transactional
+    public List<BigInteger> getLotIdToBeUpdated(){
+
+        String query = "SELECT lot.id FROM lot " +
+                "WHERE lot.end_time <= :nowDate " +
+                "AND lot.status = :oldStatus";
+
+        return em.createNativeQuery(query)
+                .setParameter("nowDate", new Date())
+                .setParameter("oldStatus", Status.ACTIVE.name())
+                .getResultList();
     }
 }

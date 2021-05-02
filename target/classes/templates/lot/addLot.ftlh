@@ -104,7 +104,6 @@
                     <input class="form-control form-control-sm" id="formFileSm" type="file" name="file"/>
                     <label class="custom-file-label" for="inputFile"></label>
                 </div>
-
             </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
