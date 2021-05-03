@@ -1,5 +1,6 @@
 <#import "../parts/common.ftlh" as c>
 <#import "/spring.ftl" as spring>
+<#include "../parts/security.ftlh">
 <@c.scriptPage "connect()">
     <div class="container border">
         <div class="row" style="background-color: #f8f9fa">
@@ -57,7 +58,8 @@
                                 </#list>
                             </#if>
                         </div>
-                        <input type="hidden" name="lotId" value="${lot.getId()}">
+                        <input type="hidden" name="lotId" value="${lot.getId()!''}">
+                        <input type="hidden" name="userId" value="${userId!''}">
                         <input type="hidden" name="date" id="hiddenDate">
                         <input type="hidden" name="_csrf" value="${_csrf.token}">
                         <button type="submit" class="btn btn-outline-secondary px-2 mx-2"

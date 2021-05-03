@@ -33,16 +33,16 @@ public class LotController {
     @Autowired
     private LotService lotService;
 
-    @Autowired
-    private LotValidator lotValidator;
+    //@Autowired
+    //private LotValidator lotValidator;
 
 
-    @InitBinder()
+    @InitBinder("lotDto")
     private void initBinder(WebDataBinder binder) {
-        binder.addValidators(lotValidator);
+        binder.addValidators(new LotValidator());
     }
 
-    @GetMapping
+    @GetMapping()
     public String lotList(
             Model model,
             @RequestParam(name = "name", required = false, defaultValue = "") String name,

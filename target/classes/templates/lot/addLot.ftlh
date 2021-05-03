@@ -10,8 +10,8 @@
                 <div class="col-sm-6">
                     <input type="text" class="form-control ${(nameError??)?string('is-invalid', '')} " id="inputName"
                            value="<#if lot??>${lot.getName()}</#if>"
-                           placeholder="<@spring.message 'form.placeholder.name'/>"
-                           name="name">
+                           name="name"
+                           placeholder="<@spring.message 'form.placeholder.name'/>">
                     <#if nameError??>
                         <#list nameError as nErr >
                             <div class="invalid-feedback">
@@ -29,9 +29,8 @@
                     <input type="text" class="form-control ${(descriptionError??)?string('is-invalid', '')} "
                            id="inputDescription"
                            value="<#if lot??>${lot.getDescription()!''}</#if>" aria-label="With textarea"
-                           placeholder="<@spring.message 'form.placeholder.description'/>"
                            name="description"
-                    />
+                           placeholder="<@spring.message 'form.placeholder.description'/>">
                     <#if descriptionError??>
                         <#list descriptionError as dErr>
                             <div class="invalid-feedback">
@@ -42,15 +41,15 @@
                 </div>
             </div>
             <div class="form-group row my-4">
-                <label for="inputInitialRate" class="col-sm-2 col-form-label mr-3">
+                <label for="inputInitialBet" class="col-sm-2 col-form-label mr-3">
                     <@spring.message "form.label.initialBet"/>
                 </label>
                 <div class="col-sm-6">
                     <input type="number" class="form-control ${(initialBetError??)?string('is-invalid', '')} "
                            value="<#if lot??>${lot.getInitialBet()!''}</#if>"
-                           id="inputInitialRate"
-                           placeholder="<@spring.message 'form.placeholder.initialBet'/>"
-                           name="initialBet">
+                           id="inputInitialBet"
+                           name="initialBet"
+                           placeholder="<@spring.message 'form.placeholder.initialBet'/>">
                     <#if initialBetError??>
                         <#list initialBetError as ibErr >
                             <div class="invalid-feedback">
@@ -84,9 +83,8 @@
                 <div class="col-sm-4">
                     <input type="number" class="form-control  ${(timeStepError??)?string('is-invalid', '')} "
                            value="<#if lot??>${lot.getTimeStep()!''}</#if>"
-                           id="inputTimeStep"
-                           placeholder="<@spring.message 'form.placeholder.timeStep'/>"
-                           name="timeStep"/>
+                           name="timeStep" id="inputTimeStep"
+                           placeholder="<@spring.message 'form.placeholder.timeStep'/>">
                     <#if timeStepError??>
                         <#list timeStepError as tsErr >
                             <div class="invalid-feedback">
@@ -101,8 +99,8 @@
                     <@spring.message "form.label.image"/>
                 </label>
                 <div class="custom-file col-sm-6">
-                    <input class="form-control form-control-sm" id="formFileSm" type="file" name="file"/>
                     <label class="custom-file-label" for="inputFile"></label>
+                    <input class="form-control form-control-sm" id="formFileSm" type="file" name="file"/>
                 </div>
             </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>

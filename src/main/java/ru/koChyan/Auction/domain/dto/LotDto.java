@@ -4,9 +4,9 @@ public class LotDto {
 
     private String name;
     private String description;
-    private Integer timeStep;
     private Long initialBet;
     private String startTime;
+    private Integer timeStep;
 
 
     public LotDto() {

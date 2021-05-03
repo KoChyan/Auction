@@ -33,6 +33,11 @@ public class PricingValidator implements Validator {
 
         validateDate(pricingDto, errors); // date >= lot.startTime
         validateBet(pricingDto, errors); // bet >= lot.finalBet
+        validateUserBalance(pricingDto, errors);
+
+    }
+
+    private void validateUserBalance(PricingDto pricingDto, Errors errors) {
 
     }
 

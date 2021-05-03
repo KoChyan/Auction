@@ -5,7 +5,7 @@ public class PricingDto {
     private Long lotId;
     private Long bet;
     private String date;
-
+    private Long userId;
 
     public PricingDto() {
     }
@@ -32,5 +32,13 @@ public class PricingDto {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

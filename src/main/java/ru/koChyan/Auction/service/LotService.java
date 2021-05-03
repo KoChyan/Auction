@@ -38,9 +38,6 @@ public class LotService {
     private LotDAO lotDAO;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private MailSender mailSender;
 
     public Page<Lot> getAllByFilter(String filterName, String filterDescription, Pageable pageable) {
@@ -65,7 +62,9 @@ public class LotService {
         lot.setStatus(Status.ACTIVE.name());
 
         lot.setFinalBet(lot.getInitialBet());
-        lot.setEndTime(lot.getStartTime());
+
+        // время окончания = время начала + интервал
+        lot.setEndTime(new Date(lot.getStartTime().getTime() + lot.getTimeStep() * 60000));
 
         //если из формы был получен файл
         if (file != null && !file.getOriginalFilename().isBlank()) {
@@ -99,7 +98,7 @@ public class LotService {
                 e.printStackTrace();
             }
 
-        }else{
+        } else {
             lot.setFilename("DEFAULT.png");
         }
 
@@ -135,7 +134,7 @@ public class LotService {
     public void updateStatus() {
 
         // отправка сообщения последнему ставившему (победителю)
-        for(BigInteger id : lotDAO.getLotIdToBeUpdated())
+        for (BigInteger id : lotDAO.getLotIdToBeUpdated())
             finish(id.longValue());
 
         lotDAO.updateStatus();
