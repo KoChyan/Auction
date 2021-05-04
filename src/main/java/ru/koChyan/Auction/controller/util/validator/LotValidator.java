@@ -20,7 +20,7 @@ public class LotValidator implements Validator {
     private static final long MINIMUM_INITIAL_BET = 1L;
     private static final long MAXIMUM_INITIAL_BET = 90000000L; // 90 000 000
 
-    private static final int MINIMUM_TIME_STEP = 5; // minutes
+    private static final int MINIMUM_TIME_STEP = 1; // minutes
     private static final int MAXIMUM_TIME_STEP = 60; // minutes
 
     @Override

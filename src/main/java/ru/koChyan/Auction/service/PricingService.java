@@ -2,6 +2,7 @@ package ru.koChyan.Auction.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.koChyan.Auction.dao.PricingDAO;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.Pricing;
 import ru.koChyan.Auction.domain.User;
@@ -15,6 +16,9 @@ public class PricingService {
 
     @Autowired
     private PricingRepo pricingRepo;
+
+    @Autowired
+    private PricingDAO pricingDAO;
 
 
     public void addPrice(User user, Lot lot) {
@@ -41,6 +45,10 @@ public class PricingService {
 
     public Pricing getLastByLotId(Long id) {
         return pricingRepo.findFirstByLotIdOrderByDateDesc(id);
+    }
+
+    public User getWinner(Long lotId){
+        return pricingDAO.findWinner(lotId);
     }
 
     public String getTimerText(int xHoursBefore, Lot lot) {

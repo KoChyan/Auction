@@ -16,6 +16,7 @@ import ru.koChyan.Auction.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Controller
@@ -64,8 +65,9 @@ public class UserController {
             Model model,
             @AuthenticationPrincipal User user
     ) {
+        Optional<User> optionalUser = userService.getById(user.getId());
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", optionalUser.orElse(user));
         return "user/profile";
     }
 

@@ -75,33 +75,33 @@ public class PricingController {
             @PathVariable Lot lot,
             Model model
     ) {
+        //если лот активен, то обновляем размер ставки
+        if (lot.getStatus().equals(Status.ACTIVE.name())) {
 
-        if (bindingResult.hasErrors()) {
-            Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
+            if (bindingResult.hasErrors()) {
+                Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
-            model.mergeAttributes(errors);
-            model.addAttribute("timerText", pricingService.getTimerText(6, lot));
-            model.addAttribute("timerValue", pricingService.getTimerValue(6, lot));
-            model.addAttribute("lot", lot);
-            model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
+                model.mergeAttributes(errors);
+                model.addAttribute("timerText", pricingService.getTimerText(6, lot));
+                model.addAttribute("timerValue", pricingService.getTimerValue(6, lot));
+                model.addAttribute("lot", lot);
+                model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
 
-            return "pricing/addBet";
-        } else {
-
-            //если лот активен, то обновляем размер ставки
-            if (lot.getStatus().equals(Status.ACTIVE.name())) {
+                return "pricing/addBet";
+            } else {
                 pricingService.addPrice(user, lot, pricingDto.getBet(), new Date(pricingDto.getDate()));
                 lotService.updateLastBet(lot, pricingDto.getBet(), new Date(pricingDto.getDate()));
+                //отправление обновленной информации о последней (актуальной) ставке на данный лот
+                template.convertAndSend(
+                        "/topic/bets/" + lot.getId(),
+                        new PricingInfoResponse(pricingDto.getBet(), pricingDto.getDate(), user.getUsername())
+                );
+
+                return "redirect:/lot/" + lot.getId() + "/bet";
             }
-
-            //отправление обновленной информации о последней (актуальной) ставке на данный лот
-            template.convertAndSend(
-                    "/topic/bets/" + lot.getId(),
-                    new PricingInfoResponse(pricingDto.getBet(), pricingDto.getDate(), user.getUsername())
-            );
-
-            return "redirect:/lot/" + lot.getId() + "/bet";
         }
+
+        return "redirect:/lot"; //если лот неактивен, то редиректим на главную
     }
 
 

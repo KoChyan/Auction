@@ -134,6 +134,10 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
     }
 
+    public void saveUser(User user){
+        userRepo.save(user);
+    }
+
     public void updateProfile(User user, String newPassword, String newEmail) {
         String userEmail = user.getEmail();
 

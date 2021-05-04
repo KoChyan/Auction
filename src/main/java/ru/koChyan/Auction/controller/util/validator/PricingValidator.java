@@ -6,8 +6,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import ru.koChyan.Auction.domain.Lot;
+import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.domain.dto.PricingDto;
 import ru.koChyan.Auction.service.LotService;
+import ru.koChyan.Auction.service.UserService;
 
 import java.util.Date;
 import java.util.Optional;
@@ -15,9 +17,13 @@ import java.util.Optional;
 @Component
 public class PricingValidator implements Validator {
 
+    private static final long MAXIMUM_BET_VALUE = 99999999L; // 99 999 999
+
     @Autowired
     private LotService lotService;
 
+    @Autowired
+    private UserService userService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -31,14 +37,25 @@ public class PricingValidator implements Validator {
 
         PricingDto pricingDto = (PricingDto) obj;
 
-        validateDate(pricingDto, errors); // date >= lot.startTime
-        validateBet(pricingDto, errors); // bet >= lot.finalBet
-        validateUserBalance(pricingDto, errors);
-
+        if(pricingDto.getBet() != null) {
+            validateDate(pricingDto, errors); // date >= lot.startTime
+            validateBet(pricingDto, errors); // bet >= lot.finalBet
+            validateUserBalance(pricingDto, errors); // bet <= user.balance
+        }
     }
 
     private void validateUserBalance(PricingDto pricingDto, Errors errors) {
+        if (pricingDto.getUserId() != null) {
+            Optional<User> optionalUser = userService.getById(pricingDto.getUserId());
 
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+
+                if (user.getBalance() < pricingDto.getBet())
+                    errors.rejectValue("bet", "bet.size.notEnough", "Недостаточно средств");
+
+            }
+        }
     }
 
     private void validateDate(PricingDto pricingDto, Errors errors) {
@@ -61,9 +78,12 @@ public class PricingValidator implements Validator {
             if (optionalLot.isPresent()) {
                 Lot lot = optionalLot.get();
                 if (pricingDto.getBet() <= lot.getFinalBet()) { // если ввели ставку <= уже существующей для этого лота
-                    errors.rejectValue("bet", "bet.min.value", "Ставка должна быть больше предыдущей");
+                    errors.rejectValue("bet", "bet.value.min", "Ставка должна быть больше предыдущей");
+                } else if (pricingDto.getBet() > MAXIMUM_BET_VALUE) {
+                    errors.rejectValue("bet", "bet.value.max", "Ставка не должна превышать " + MAXIMUM_BET_VALUE);
                 }
             }
         }
     }
+
 }

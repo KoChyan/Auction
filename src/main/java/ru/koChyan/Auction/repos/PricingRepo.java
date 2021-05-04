@@ -6,6 +6,5 @@ import ru.koChyan.Auction.domain.Pricing;
 
 @Repository
 public interface PricingRepo extends JpaRepository<Pricing, Long> {
-
     Pricing findFirstByLotIdOrderByDateDesc(Long id);
 }
