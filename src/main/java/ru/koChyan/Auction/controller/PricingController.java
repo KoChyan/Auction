@@ -20,6 +20,7 @@ import ru.koChyan.Auction.domain.dto.response.LotStatusResponseDto;
 import ru.koChyan.Auction.domain.dto.response.PricingInfoResponse;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
+import ru.koChyan.Auction.service.TimerService;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -35,6 +36,9 @@ public class PricingController {
 
     @Autowired
     private LotService lotService;
+
+    @Autowired
+    private TimerService timerService;
 
     @Autowired
     private SimpMessagingTemplate template;
@@ -56,14 +60,14 @@ public class PricingController {
 
         if (lot.getStatus().equals(Status.ACTIVE.name())) {
 
-            model.addAttribute("timerText", pricingService.getTimerText(6, lot));
-            model.addAttribute("timerValue", pricingService.getTimerValue(6, lot));
+            model.addAttribute("timerText", timerService.getTimerText(6, lot));
+            model.addAttribute("timerValue", timerService.getTimerValue(6, lot));
             model.addAttribute("lot", lot);
             model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
             return "pricing/addBet";
         }
 
-        // если лот уже не активен, то редиректим со страницы торгов на главную
+        // если лот уже неактивен, то редиректим со страницы торгов на главную
         return "redirect:/lot";
     }
 
@@ -82,8 +86,8 @@ public class PricingController {
                 Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
                 model.mergeAttributes(errors);
-                model.addAttribute("timerText", pricingService.getTimerText(6, lot));
-                model.addAttribute("timerValue", pricingService.getTimerValue(6, lot));
+                model.addAttribute("timerText", timerService.getTimerText(6, lot));
+                model.addAttribute("timerValue", timerService.getTimerValue(6, lot));
                 model.addAttribute("lot", lot);
                 model.addAttribute("pricing", pricingService.getLastByLotId(lot.getId()));
 

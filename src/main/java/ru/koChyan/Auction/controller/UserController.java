@@ -41,9 +41,9 @@ public class UserController {
             Model model,
             @PathVariable User user
     ) {
+
         model.addAttribute("user", user);
         model.addAttribute("roles", Role.values());
-
         return "user/userEdit";
     }
 
@@ -65,8 +65,8 @@ public class UserController {
             Model model,
             @AuthenticationPrincipal User user
     ) {
-        Optional<User> optionalUser = userService.getById(user.getId());
 
+        Optional<User> optionalUser = userService.getById(user.getId());
         model.addAttribute("user", optionalUser.orElse(user));
         return "user/profile";
     }
@@ -85,7 +85,6 @@ public class UserController {
             model.addAttribute("user", user);
             model.mergeAttributes(errors);
             return "user/profile";
-
         } else {
 
             userService.updateProfile(user, userFromForm.getPassword(), userFromForm.getEmail());

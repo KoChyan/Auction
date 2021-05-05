@@ -43,7 +43,7 @@ public class LotService {
     @Autowired
     private ExchangeService exchangeService;
 
-    public Page<Lot> getAllByFilter(String filterName, String filterDescription, Pageable pageable) {
+    public Page<Lot> getAllActiveByFilter(String filterName, String filterDescription, Pageable pageable) {
         //если оба фильтра не заданы
         if (Strings.isNullOrEmpty(filterName) && Strings.isNullOrEmpty(filterDescription))
             return lotRepo.findAllByStatusOrderByStartTimeAsc(Status.ACTIVE.name(), pageable);
@@ -132,7 +132,7 @@ public class LotService {
 
     public void updateStatus() {
 
-        // отправка сообщения последнему ставившему (победителю)
+        // завершение торгов за лоты, время торгов которых завершено
         for (BigInteger id : lotDAO.getLotIdToBeUpdated())
             finish(id.longValue());
 
@@ -158,7 +158,7 @@ public class LotService {
             User winner = pricingService.getWinner(lotId); // пользователь с балансом >= ставке (самой поздней по дате)
 
             //перевод денег с баланса победителя торгов на баланс создателя лота
-            if(!winner.equals(lot.getCreator())) // если создатель и победитель не один и тот де пользователь
+            if(!winner.equals(lot.getCreator())) // если создатель и победитель не один и тот же пользователь
                 exchangeService.sendMoney(winner, lot.getCreator(), lot.getFinalBet());
 
             sendMessageToWinner(winner, lot);

@@ -7,13 +7,12 @@ function connect() {
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
 
+        stompClient.subscribe('/topic/timer', function (timerResponse) {
+            updateTimer(timerResponse);
+        });
 
         stompClient.subscribe('/topic/bets/' + getLotId(), function (pricingResponse) {
             showPricingResponse(pricingResponse);
-        });
-
-        stompClient.subscribe('/topic/timer', function (timerResponse) {
-            updateTimer(timerResponse);
         });
 
     });
@@ -66,7 +65,7 @@ function updateTimer(timerResponse) {
         let hoursLeft = (timeLeft - minutesLeft * 60 - secondsLeft - intervalMillis / 1000) / 3600 % 60; // 1..23
         if(hoursLeft < 6){
             $("#timerText").text('До начала аукциона: ');
-            $("#timer").text(hoursLeft + ' ч, ' + minutesLeft + ' м, ' + secondsLeft + ' с');
+            $("#timer").text(hoursLeft + ':' + minutesLeft + ':' + secondsLeft);
         }else{
             $("#timerText").text('Дата начала аукциона: ');
             $("#timer").text($("#betDate").html().toString())

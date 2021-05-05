@@ -3,10 +3,10 @@ CREATE TABLE comment
 (
     id        BIGINT NOT NULL,
     text      VARCHAR(1024),
-    date    DATETIME,
-    author_id BIGINT,
-    lot_id    BIGINT,
-    primary key (id)
+    date      DATETIME,
+    author_id BIGINT NOT NULL ,
+    lot_id    BIGINT NOT NULL ,
+    PRIMARY KEY (id)
 );
 
 ALTER TABLE comment

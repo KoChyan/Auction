@@ -52,12 +52,12 @@ public class LotController {
 
         lotService.updateStatus(); // обновить статус у уже завершивших свой срок действия лотов
         model.addAttribute("url", "/lot"); // url для построения ссылок для пагинации
-        model.addAttribute("page", lotService.getAllByFilter(name, description, pageable));
+        model.addAttribute("page", lotService.getAllActiveByFilter(name, description, pageable));
         return "lot/lotList";
     }
 
     @GetMapping("/add")
-    public String getLotForm() {
+    public String getLotAddForm() {
 
         return "lot/addLot";
     }
@@ -70,7 +70,6 @@ public class LotController {
             Model model,
             @RequestParam(name = "file") MultipartFile file
     ) {
-
         //если есть ошибки при вводе данных
         if (bindingResult.hasErrors()) {
             Map<String, List<String>> errorsMap = ControllerUtils.getErrors(bindingResult);
@@ -79,6 +78,7 @@ public class LotController {
             model.addAttribute("lot", lotDto);
             return "lot/addLot";
         } else {
+
             lotService.addLot(user, lotDto, file);
             return "redirect:/lot";
         }

@@ -2,6 +2,8 @@ package ru.koChyan.Auction.domain;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "lot")
@@ -16,23 +18,22 @@ public class Lot {
     private User creator;
 
     private String name;
-
     private String description;
-
     private Date startTime;
-
     private Date endTime;
-
     private Integer timeStep;
-
     private Long initialBet;
-
     private Long finalBet;
-
-    //название файла(фотографии)
-    private String filename;
-
+    private String filename;  //название файла(фотографии)
     private String status;
+
+    @ManyToMany
+    @JoinTable(
+            name = "subscription",
+            joinColumns = {@JoinColumn(name = "subscriber_id")},
+            inverseJoinColumns = {@JoinColumn(name = "lot_id")}
+    )
+    private Set<User> subscribers = new HashSet<>();
 
 
     public Lot() {
@@ -126,4 +127,11 @@ public class Lot {
         this.timeStep = timeStep;
     }
 
+    public Set<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(Set<User> subscribers) {
+        this.subscribers = subscribers;
+    }
 }

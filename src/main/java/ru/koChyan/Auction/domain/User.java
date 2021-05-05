@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,21 +18,24 @@ public class User implements UserDetails {
     private Long id;
 
     private String username;
-
     private String password;
-
     private Boolean active;
-
     private Long balance;
-
     private String email;
-
     private String activationCode;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    @ManyToMany
+    @JoinTable(
+            name = "subscription",
+            joinColumns = {@JoinColumn(name = "lot_id")},
+            inverseJoinColumns = {@JoinColumn(name = "subscriber_id")}
+    )
+    private Set<Lot> lots = new HashSet<>();
 
 
     public User() {
@@ -139,6 +143,14 @@ public class User implements UserDetails {
 
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
+    }
+
+    public Set<Lot> getLots() {
+        return lots;
+    }
+
+    public void setLots(Set<Lot> lots) {
+        this.lots = lots;
     }
 
     @Override
