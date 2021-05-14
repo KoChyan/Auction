@@ -32,8 +32,8 @@ public class User implements UserDetails {
     @ManyToMany
     @JoinTable(
             name = "subscription",
-            joinColumns = {@JoinColumn(name = "lot_id")},
-            inverseJoinColumns = {@JoinColumn(name = "subscriber_id")}
+                joinColumns = @JoinColumn(name = "subscriber_id"),
+            inverseJoinColumns = @JoinColumn(name = "lot_id")
     )
     private Set<Lot> lots = new HashSet<>();
 
@@ -149,9 +149,10 @@ public class User implements UserDetails {
         return lots;
     }
 
-    public void setLots(Set<Lot> lots) {
+    private void setLots(Set<Lot> lots) {
         this.lots = lots;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -166,5 +167,14 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(id, username, email);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

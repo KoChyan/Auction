@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class FixedDelayTasks {
 
-    private final static int delayOfUpdateLotStatus = 5000;
+    private final static int delayOfUpdating = 5000;
 
     @Autowired
     private SimpMessagingTemplate template;
@@ -21,14 +21,16 @@ public class FixedDelayTasks {
     @Autowired
     private LotService lotService;
 
-    @Scheduled(fixedRate = 1000) // отправляем в топик таймера текущее время сервера
+
+    @Scheduled(fixedDelay = 1000)
     public void sendServerTime() {
         template.convertAndSend("/topic/timer", new TimerResponseDto(String.valueOf(new Date().getTime())));
     }
 
-    @Scheduled(fixedDelay = delayOfUpdateLotStatus) // обновление статуса лотов
-    public void updateLotStatus() {
-        lotService.updateStatus();
+    // обновление статуса лотов и удаление пользователей из подписок, если статус лота не "активен"
+    @Scheduled(fixedDelay = delayOfUpdating)
+    public void updateLot() {
+        lotService.finishIfTimeOver(); //автоматическое завершение лотов
     }
 
 }

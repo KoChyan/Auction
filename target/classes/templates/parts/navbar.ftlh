@@ -4,10 +4,12 @@
         <a class="navbar-brand" href="/lot">
             <@spring.message "navbar.link.title"/>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
@@ -19,9 +21,11 @@
                         <li>
                             <a class="dropdown-item" href="/lot"><@spring.message 'link.viewLots'/></a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="/lot/add"><@spring.message "link.addLot"/></a>
-                        </li>
+                        <#if isUser>
+                            <li>
+                                <a class="dropdown-item" href="/lot/add"><@spring.message "link.addLot"/></a>
+                            </li>
+                        </#if>
                     </ul>
                 </li>
             </ul>

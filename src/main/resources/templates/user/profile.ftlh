@@ -2,6 +2,10 @@
 <#import "/spring.ftl" as spring>
 <@c.page>
     <div class="m-5">
+        <a href="/user/profile/subscriptions"><@spring.message "link.toSubscriptions"/></a>
+    </div>
+
+    <div class="m-5">
         <h5>${user.getUsername()!''}</h5>
     </div>
 
@@ -16,13 +20,13 @@
                 <@spring.message "form.label.password"/>
             </label>
             <div class="col-sm-5">
-                <input type="password" class="form-control ${(passwordError??)?string('is-invalid', '')}"
+                <input type="password" class="form-control ${(newPasswordError??)?string('is-invalid', '')}"
                        placeholder="<@spring.message 'form.placeholder.newPassword'/>"
-                       name="password"/>
-                <#if passwordError??>
-                    <#list passwordError as pErr >
+                       name="newPassword"/>
+                <#if newPasswordError??>
+                    <#list newPasswordError as newPasswordErr >
                         <div class="invalid-feedback">
-                            ${pErr}
+                            ${newPasswordErr}
                         </div>
                     </#list>
                 </#if>
@@ -33,14 +37,14 @@
                 <@spring.message "form.label.email"/>
             </label>
             <div class="col-sm-5">
-                <input type="text" class="form-control ${(emailError??)?string('is-invalid', '')}"
+                <input type="text" class="form-control ${(newEmailError??)?string('is-invalid', '')}"
                        value="${user.getEmail()!''}"
                        placeholder="<@spring.message 'form.placeholder.newEmail'/>"
-                       name="email"/>
-                <#if emailError??>
-                    <#list emailError as eErr >
+                       name="newEmail"/>
+                <#if newEmailError??>
+                    <#list newEmailError as newEmailErr >
                         <div class="invalid-feedback">
-                            ${eErr}
+                            ${newEmailErr}
                         </div>
                     </#list>
                 </#if>

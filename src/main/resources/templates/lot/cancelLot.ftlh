@@ -22,9 +22,17 @@
                     <@spring.message "cancelReason"/>
                 </label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="reason"
+                    <input type="text" class="form-control ${(textError??)?string('is-invalid', '')}" id="reason"
                            placeholder="<@spring.message 'cancelReason.placeholder'/>"
-                           name="reason">
+                           value="<#if reason??>${reason.getText()}</#if>"
+                           name="text">
+                    <#if textError??>
+                        <#list textError as textErr>
+                            <div class="invalid-feedback">
+                                ${textErr}
+                            </div>
+                        </#list>
+                    </#if>
                 </div>
             </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}">

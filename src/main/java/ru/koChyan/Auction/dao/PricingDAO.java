@@ -13,7 +13,7 @@ public class PricingDAO {
     @PersistenceContext
     private EntityManager em;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public User findWinner(Long lotId) {
 
         String query = "SELECT user.* " +
@@ -27,9 +27,9 @@ public class PricingDAO {
                 "ORDER BY pricing.bet DESC " +
                 "LIMIT 1";
 
-        return (User) em.createNativeQuery(query, User.class)
+        return (User)em.createNativeQuery(query, User.class)
                 .setParameter("lotId", lotId)
-                .getSingleResult();
+                .getResultStream().findFirst().orElse(null);
     }
 
 }

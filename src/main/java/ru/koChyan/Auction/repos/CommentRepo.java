@@ -9,5 +9,4 @@ import ru.koChyan.Auction.domain.Comment;
 @Repository
 public interface CommentRepo extends JpaRepository<Comment, Long> {
     Page<Comment> findByLotIdOrderByDateDesc(Long id, Pageable pageable);
-
 }

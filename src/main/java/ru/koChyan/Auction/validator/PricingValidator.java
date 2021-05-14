@@ -1,4 +1,4 @@
-package ru.koChyan.Auction.controller.util.validator;
+package ru.koChyan.Auction.validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +13,7 @@ import ru.koChyan.Auction.service.UserService;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 @Component
 public class PricingValidator implements Validator {
@@ -25,6 +26,9 @@ public class PricingValidator implements Validator {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ResourceBundle resourceBundle;
+
     @Override
     public boolean supports(Class<?> clazz) {
         return PricingDto.class.equals(clazz);
@@ -32,8 +36,8 @@ public class PricingValidator implements Validator {
 
     @Override
     public void validate(Object obj, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bet", "bet.empty", "Обязательное поле");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "date", "date.empty", "Обязательное поле");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bet", "bet.empty", resourceBundle.getString("error.empty"));
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "date", "date.empty", resourceBundle.getString("error.empty"));
 
         PricingDto pricingDto = (PricingDto) obj;
 
@@ -52,7 +56,7 @@ public class PricingValidator implements Validator {
                 User user = optionalUser.get();
 
                 if (user.getBalance() < pricingDto.getBet())
-                    errors.rejectValue("bet", "bet.size.notEnough", "Недостаточно средств");
+                    errors.rejectValue("bet", "bet.value.notEnough", resourceBundle.getString("error.bet.notEnough"));
 
             }
         }
@@ -65,7 +69,7 @@ public class PricingValidator implements Validator {
             if (optionalLot.isPresent()) { // если лот с таким id есть в бд
                 Lot lot = optionalLot.get();
                 if (new Date().before(lot.getStartTime())) { // если время старта торгов еще не наступило
-                    errors.rejectValue("bet", "bet.date.future", "Дождитесь начала торгов");
+                    errors.rejectValue("bet", "bet.date.future", resourceBundle.getString("error.date.future"));
                 }
             }
         }
@@ -78,9 +82,9 @@ public class PricingValidator implements Validator {
             if (optionalLot.isPresent()) {
                 Lot lot = optionalLot.get();
                 if (pricingDto.getBet() <= lot.getFinalBet()) { // если ввели ставку <= уже существующей для этого лота
-                    errors.rejectValue("bet", "bet.value.min", "Ставка должна быть больше предыдущей");
+                    errors.rejectValue("bet", "bet.value.min", resourceBundle.getString("error.bet.greaterThanLast"));
                 } else if (pricingDto.getBet() > MAXIMUM_BET_VALUE) {
-                    errors.rejectValue("bet", "bet.value.max", "Ставка не должна превышать " + MAXIMUM_BET_VALUE);
+                    errors.rejectValue("bet", "bet.value.max", resourceBundle.getString("error.value.max") + " " + MAXIMUM_BET_VALUE);
                 }
             }
         }

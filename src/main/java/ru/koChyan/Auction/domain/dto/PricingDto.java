@@ -1,5 +1,7 @@
 package ru.koChyan.Auction.domain.dto;
 
+import java.util.Objects;
+
 public class PricingDto {
 
     private Long lotId;
@@ -40,5 +42,19 @@ public class PricingDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PricingDto that = (PricingDto) o;
+        return lotId.equals(that.lotId) &&
+                date.equals(that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lotId, date);
     }
 }

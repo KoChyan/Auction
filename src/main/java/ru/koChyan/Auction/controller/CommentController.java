@@ -10,16 +10,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import ru.koChyan.Auction.controller.util.ControllerUtils;
 import ru.koChyan.Auction.domain.Comment;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.Status;
 import ru.koChyan.Auction.domain.User;
 import ru.koChyan.Auction.service.CommentService;
+import ru.koChyan.Auction.validator.CommentValidator;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -35,8 +34,16 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private CommentValidator commentValidator;
 
-    @GetMapping()
+    @InitBinder("comment")
+    protected void initCommentBinder(WebDataBinder binder){
+        binder.setValidator(commentValidator);
+    }
+
+
+    @GetMapping
     public String commentList(
             @PathVariable Lot lot,
             Model model,
@@ -52,7 +59,8 @@ public class CommentController {
         }
     }
 
-    @PostMapping()
+    @PostMapping
+    @PreAuthorize("hasAuthority('USER')")
     public String addComment(
             @AuthenticationPrincipal User user,
             @PathVariable Lot lot,
@@ -81,13 +89,14 @@ public class CommentController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')") // требуем права админа для удаления комментария
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/{comment}/delete")
     public String deleteComment(
             @PathVariable Lot lot,
             @PathVariable Comment comment
     ) {
         if (lot.getStatus().equals(Status.ACTIVE.name())) { //если лот все еще активен
+
             commentService.remove(comment);
             return "redirect:/lot/" + lot.getId() + "/comment";
         } else {

@@ -6,21 +6,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import ru.koChyan.Auction.controller.util.ControllerUtils;
 import ru.koChyan.Auction.domain.dto.UserDto;
 import ru.koChyan.Auction.domain.dto.response.CaptchaResponseDto;
 import ru.koChyan.Auction.service.UserService;
+import ru.koChyan.Auction.validator.UserValidator;
 
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class RegistrationController {
@@ -35,6 +31,17 @@ public class RegistrationController {
 
     @Value("${recaptcha.secret}")
     private String recaptchaSecret;
+
+    @Autowired
+    private ResourceBundle resourceBundle;
+
+    @Autowired
+    private UserValidator userValidator;
+
+    @InitBinder("userDto")
+    protected void initBinder(WebDataBinder binder){
+        binder.addValidators(userValidator);
+    }
 
 
     @GetMapping("/registration")
@@ -53,11 +60,11 @@ public class RegistrationController {
         String url = String.format(CAPTCHA_URL, recaptchaSecret, captchaResponse);
         CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
 
-        if (!response.isSuccess()) {
-            model.addAttribute("captchaError", "Заполните капчу");
+        if (!Objects.requireNonNull(response).isSuccess()) {
+            model.addAttribute("captchaError", resourceBundle.getString("error.captcha"));
         }
 
-        if (bindingResult.hasErrors() || !response.isSuccess()) {
+        if (bindingResult.hasErrors() || !Objects.requireNonNull(response).isSuccess()) {
             Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
             model.mergeAttributes(errors);
@@ -65,13 +72,8 @@ public class RegistrationController {
 
             return "registration";
         } else {
-            //Если при добавлении пользователя произойдет ошибка (получим false)
-            //то оповестим об этом
-            if (!userService.addUser(userDto)) {
-                model.addAttribute("usernameError", Arrays.asList("Ошибка при добавлении пользователя"));
-                return "registration";
-            }
-            model.addAttribute("message", "Перейдите по ссылке из письма на вашей почте для активации аккаунта");
+            userService.addUser(userDto);
+            model.addAttribute("message", resourceBundle.getString("message.followLinkInEmail"));
             return "login";
         }
     }
@@ -84,10 +86,10 @@ public class RegistrationController {
         boolean isActivated = userService.activateUser(code);
 
         if (isActivated) {
-            model.addAttribute("message", "Аккаунт успешно активирован!");
+            model.addAttribute("message", resourceBundle.getString("message.activationCode.valid"));
         } else {
-            model.addAttribute("message", "Код активации не был найден!");
+            model.addAttribute("message", resourceBundle.getString("message.activationCode.invalid"));
         }
-        return "/login";
+        return "login";
     }
 }

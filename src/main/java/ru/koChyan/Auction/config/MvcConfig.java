@@ -12,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
@@ -39,9 +40,17 @@ public class MvcConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public LocaleResolver localeResolver() {
-        LocaleResolver resolver = new FixedLocaleResolver(new Locale("ru"));
-        return resolver;
+    public Locale locale(){
+        return new Locale("ru");
     }
 
+    @Bean
+    public LocaleResolver localeResolver() {
+        return new FixedLocaleResolver(locale());
+    }
+
+    @Bean
+    public ResourceBundle resourceBundle(){
+        return ResourceBundle.getBundle("lang.messages", locale());
+    }
 }

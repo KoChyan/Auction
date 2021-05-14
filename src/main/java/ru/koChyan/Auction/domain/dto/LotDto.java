@@ -1,5 +1,7 @@
 package ru.koChyan.Auction.domain.dto;
 
+import java.util.Objects;
+
 public class LotDto {
 
     private String name;
@@ -50,5 +52,20 @@ public class LotDto {
 
     public void setStartTime(String startTime) {
         this.startTime = startTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LotDto lotDto = (LotDto) o;
+        return name.equals(lotDto.name) &&
+                Objects.equals(description, lotDto.description) &&
+                startTime.equals(lotDto.startTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, startTime);
     }
 }

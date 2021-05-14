@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ru.koChyan.Auction.controller.util.ControllerUtils;
-import ru.koChyan.Auction.controller.util.validator.PricingValidator;
 import ru.koChyan.Auction.domain.Lot;
 import ru.koChyan.Auction.domain.Status;
 import ru.koChyan.Auction.domain.User;
@@ -21,6 +21,7 @@ import ru.koChyan.Auction.domain.dto.response.PricingInfoResponse;
 import ru.koChyan.Auction.service.LotService;
 import ru.koChyan.Auction.service.PricingService;
 import ru.koChyan.Auction.service.TimerService;
+import ru.koChyan.Auction.validator.PricingValidator;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/lot/{lot}/bet")
+@PreAuthorize("hasAuthority('USER')")
 public class PricingController {
 
     @Autowired
@@ -47,7 +49,7 @@ public class PricingController {
     private PricingValidator pricingValidator;
 
     @InitBinder("pricingDto")
-    private void initBinder(WebDataBinder binder) {
+    protected void initBinder(WebDataBinder binder) {
         binder.addValidators(pricingValidator);
     }
 
@@ -57,7 +59,6 @@ public class PricingController {
             @PathVariable Lot lot,
             Model model
     ) {
-
         if (lot.getStatus().equals(Status.ACTIVE.name())) {
 
             model.addAttribute("timerText", timerService.getTimerText(6, lot));
@@ -81,7 +82,6 @@ public class PricingController {
     ) {
         //если лот активен, то обновляем размер ставки
         if (lot.getStatus().equals(Status.ACTIVE.name())) {
-
             if (bindingResult.hasErrors()) {
                 Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
@@ -104,10 +104,8 @@ public class PricingController {
                 return "redirect:/lot/" + lot.getId() + "/bet";
             }
         }
-
         return "redirect:/lot"; //если лот неактивен, то редиректим на главную
     }
-
 
     @MessageMapping("/pricing")
     public void getStatus(String responseJson) {

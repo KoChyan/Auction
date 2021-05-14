@@ -1,7 +1,8 @@
 package ru.koChyan.Auction.service;
 
-import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
+
     @Autowired
     private UserRepo userRepo;
 
@@ -26,6 +28,12 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ResourceBundle resourceBundle;
+
+
+    public UserService() {
+    }
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
@@ -38,20 +46,7 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean addUser(UserDto userDto) {
-        User userFromDb = userRepo.findByUsername(userDto.getUsername());
-
-        //Если пользователь c таким username уже есть в БД, сообщаем об ошибке
-        if (userFromDb != null) {
-            return false;
-        }
-
-        //Если пользователь с таким email уже есть в БД, сообщаем об ошибке
-        userFromDb = userRepo.findByEmail(userDto.getEmail());
-        if (userFromDb != null) {
-            return false;
-        }
-
-        //иначе создаем пользователя
+        // создаем пользователя
         User user = new User();
 
         //перепишем значения с userDto
@@ -66,55 +61,41 @@ public class UserService implements UserDetailsService {
 
         //шифруем пароль
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         userRepo.save(user);
-        //Если у пользователя есть почта и она не состоит из пробелов
-        //то отправляем ему код для подтверждения аккаунта
+
+        // отправляем пользователю код для подтверждения аккаунта
         sendActivationCode(user);
 
         return true;
     }
 
     private void sendActivationCode(User user) {
-        if (!StringUtils.isEmptyOrWhitespaceOnly(user.getEmail())) {
+        String message = String.format(
+                resourceBundle.getString("message.toNewUser"),
+                user.getActivationCode()
+        );
 
-            String message = String.format(
-                    "Здравствуйте, %s! \n" +
-                            "Добро пожаловать на аукцион Ambey.\n" +
-                            "Для подтверждения регистрации, пожалуйста, перейдите по ссылке:\n" +
-                            "http://localhost:8080/activate/%s",
-                    user.getUsername(),
-                    user.getActivationCode()
-            );
+        String subject = resourceBundle.getString("subject.toNewUser");
 
-            mailSender.send(user.getEmail(), "Activation code", message);
-        }
+        mailSender.send(user.getEmail(), subject, message);
     }
 
     public boolean activateUser(String code) {
         User user = userRepo.findByActivationCode(code);
 
         //если пользователь не найден, то выводим false
-        if (user == null) {
+        if (user == null)
             return false;
-        }
 
         //помечаем, что код активирован
         user.setActivationCode(null);
         user.setActive(true);
 
         userRepo.save(user);
-
         return true;
     }
 
-    public List<User> findAll() {
-        return userRepo.findAll();
-    }
-
-    public void saveUser(User user, String username, Map<String, String> form, Long balance) {
-
-        user.setUsername(username);
+    public void saveUser(User user, Map<String, String> form, Long balance) {
         user.setBalance(balance);
 
         //помещаем в Set все существующие роли
@@ -134,52 +115,45 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
     }
 
-    public void saveUser(User user){
+    public void saveUser(User user) {
         userRepo.save(user);
     }
 
-    public void updateProfile(User user, String newPassword, String newEmail) {
-        String userEmail = user.getEmail();
+    public void updateProfile(User user, UserDto userFromForm) {
+        // если не null и не из пробелов/пустой
+        boolean isEmailChanged = userFromForm.getNewEmail() != null && !userFromForm.getNewEmail().isBlank();
 
-        //проверяем старую и новую почту на равенство null и друг другу
-        boolean isEmailChanged = (userEmail != null && !userEmail.equals(newEmail) ||
-                newEmail != null && !newEmail.equals(userEmail));
+        if (isEmailChanged) {
+            user.setEmail(userFromForm.getNewEmail());
 
-        //если email изменился и он не null
-        //то ищем, есть ли уже другой пользователь
-        //с таким email в БД
-        User userFromDb = userRepo.findByEmail(newEmail);
+            //то устанавливаем ему код активации
+            user.setActivationCode(UUID.randomUUID().toString());
 
-        //Если в БД пользователь с таким email не найден
-        //то изменяем почту пользователю из формы
-        if (userFromDb == null)
-            if (isEmailChanged) {
-                user.setEmail(newEmail);
-
-                //если пользователь установил новый непустой email
-                if (!StringUtils.isEmptyOrWhitespaceOnly(newEmail)) {
-
-                    //то устанавливаем ему код активации
-                    user.setActivationCode(UUID.randomUUID().toString());
-                }
-            }
-
-        //если пользователь ввел новый непустой пароль, то устанавливаем его
-        if (!StringUtils.isEmptyOrWhitespaceOnly(newPassword)) {
-            user.setPassword(passwordEncoder.encode(newPassword));
+            sendActivationCode(user);
         }
 
-        userRepo.save(user);
+        boolean isPasswordChanged = userFromForm.getNewPassword() != null && !userFromForm.getNewPassword().isBlank();
 
-        //отправляем код активации, если email был изменен
-        //и не был занят другим пользователем
-        if (userFromDb == null)
-            if (isEmailChanged) {
-                sendActivationCode(user);
-            }
+        if (isPasswordChanged)
+            user.setPassword(passwordEncoder.encode(userFromForm.getNewPassword()));
+
+        if (isEmailChanged || isPasswordChanged)
+            userRepo.save(user);
     }
 
     public Optional<User> getById(Long id) {
         return userRepo.findById(id);
+    }
+
+    public boolean isExistsByEmail(String userEmail) {
+        return userRepo.findByEmail(userEmail) != null;
+    }
+
+    public boolean isExistsByUsername(String username) {
+        return userRepo.findByUsername(username) != null;
+    }
+
+    public Page<User> getAll(Pageable pageable) {
+        return userRepo.findAll(pageable);
     }
 }

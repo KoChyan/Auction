@@ -57,36 +57,8 @@ public class LotDAO {
         return new PageImpl<Lot>(query.getResultList(), pageable, totalRows);
     }
 
-    @Transactional
-    public void setStatus(Long id, String status) {
-
-        if (!Strings.isNullOrEmpty(status)) {
-
-            String query = "UPDATE lot SET lot.status = :status " +
-                    "WHERE lot.id = :id";
-
-            em.createNativeQuery(query)
-                    .setParameter("status", status)
-                    .setParameter("id", id)
-                    .executeUpdate();
-        }
-    }
-
-    @Transactional
-    public void updateStatus() {
-        String query = "UPDATE lot SET lot .status = :newStatus " +
-                "WHERE lot.end_time <= :nowDate " +
-                "AND lot.status = :oldStatus";
-
-        em.createNativeQuery(query)
-                .setParameter("nowDate", new Date())
-                .setParameter("newStatus", Status.FINISHED.name())
-                .setParameter("oldStatus", Status.ACTIVE.name())
-                .executeUpdate();
-    }
-
-    @Transactional
-    public List<BigInteger> getLotIdToBeUpdated(){
+    @Transactional(readOnly = true)
+    public List<BigInteger> getLotIdToBeUpdated() {
 
         String query = "SELECT lot.id FROM lot " +
                 "WHERE lot.end_time <= :nowDate " +
@@ -97,4 +69,5 @@ public class LotDAO {
                 .setParameter("oldStatus", Status.ACTIVE.name())
                 .getResultList();
     }
+
 }

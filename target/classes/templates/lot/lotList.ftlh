@@ -21,7 +21,8 @@
                     <div class="card-body p-0">
                         <div class="fw-bold mt-2 text-center">
                             <p>
-                                <@spring.message "field.lot.startTime"/>: ${lot.getStartTime()?string('dd.MM.yyyy HH:mm')!''}
+                                <@spring.message "field.lot.startTime"/>
+                                : ${lot.getStartTime()?string('dd.MM.yyyy HH:mm')!''}
                             </p>
                             <#if isAdmin>
                                 <div class="mb-2">
@@ -29,6 +30,11 @@
                                         <@spring.message "link.cancelAuction"/>
                                     </a>
                                 </div>
+                            </#if>
+                            <#if isUser && lot.isSubscriber(user)>
+                                <a href="lot/${lot.getId()}/unsubscribe"><@spring.message "unsubscribe"/></a>
+                            <#elseif isUser && !lot.isSubscriber(user)>
+                                <a href="lot/${lot.getId()}/subscribe"><@spring.message "subscribe"/></a>
                             </#if>
                         </div>
                         <div class="d-grid gap-2">
@@ -39,10 +45,12 @@
                             </button>
                         </div>
                         <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                            <a href="lot/${lot.getId()}/bet" id="btnGroup" role="button"
-                               class="btn btn-outline-secondary">
-                                <@spring.message "link.toBets"/>
-                            </a>
+                            <#if isUser>
+                                <a href="lot/${lot.getId()}/bet" id="btnGroup" role="button"
+                                   class="btn btn-outline-secondary">
+                                    <@spring.message "link.toBets"/>
+                                </a>
+                            </#if>
                             <a href="lot/${lot.getId()}/comment" id="btnGroup" role="button"
                                class="btn btn-outline-secondary">
                                 <@spring.message "link.toComments"/>

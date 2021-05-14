@@ -1,23 +1,13 @@
 package ru.koChyan.Auction.domain.dto;
 
-import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
 public class UserDto {
 
-    @NotBlank(message = "Обязательное поле")
-    @Length(min = 2, max = 16, message = "Необходимо ввести от 2 до 16 символов")
     private String username;
-
-    @NotBlank(message = "Обязательное поле")
-    @Length(min = 4, max = 12, message = "Необходимо ввести от 4 до 12 символов")
     private String password;
-
-    @NotBlank(message = "Обязательное поле")
-    @Email(message = "Невалидный email")
+    private String newPassword;
     private String email;
+    private String newEmail;
+
 
     public UserDto() {
     }
@@ -46,4 +36,19 @@ public class UserDto {
         this.email = email;
     }
 
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getNewEmail() {
+        return newEmail;
+    }
+
+    public void setNewEmail(String newEmail) {
+        this.newEmail = newEmail;
+    }
 }

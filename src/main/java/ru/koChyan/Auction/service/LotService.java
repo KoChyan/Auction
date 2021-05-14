@@ -18,10 +18,7 @@ import ru.koChyan.Auction.repos.LotRepo;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class LotService {
@@ -38,10 +35,17 @@ public class LotService {
     private LotDAO lotDAO;
 
     @Autowired
+    private SubscriptionService subscriptionService;
+
+    @Autowired
     private MailSender mailSender;
 
     @Autowired
     private ExchangeService exchangeService;
+
+    @Autowired
+    private ResourceBundle resourceBundle;
+
 
     public Page<Lot> getAllActiveByFilter(String filterName, String filterDescription, Pageable pageable) {
         //если оба фильтра не заданы
@@ -122,21 +126,16 @@ public class LotService {
         lot.setEndTime(newEndTime);
     }
 
-    public List<Lot> getAll() {
-        return lotRepo.findAll();
-    }
-
     public Optional<Lot> getById(Long id) {
         return lotRepo.findById(id);
     }
 
-    public void updateStatus() {
-
-        // завершение торгов за лоты, время торгов которых завершено
-        for (BigInteger id : lotDAO.getLotIdToBeUpdated())
+    public void finishIfTimeOver() {
+        // завершение торгов за лоты, время торгов которых закончилось
+        for (BigInteger id : lotDAO.getLotIdToBeUpdated()) {
             finish(id.longValue());
+        }
 
-        lotDAO.updateStatus();
     }
 
     public synchronized void finish(Long lotId) { //synchronized - для запрета одновременного выполнения
@@ -146,7 +145,7 @@ public class LotService {
             Lot lot = optionalLot.get();
 
             // если уже завершен лот (одной из нескольких открытых вкладок)
-            if (lot.getStatus().equals(Status.FINISHED.name()))
+            if (!lot.getStatus().equals(Status.ACTIVE.name()))
                 return;
 
             lot.setStatus(Status.FINISHED.name());
@@ -154,43 +153,73 @@ public class LotService {
             lot.setEndTime(endDate);
             lotRepo.save(lot);
 
+            // пользователь с балансом >= ставке (самой поздней по дате)
+            User winner = pricingService.getWinner(lotId);
 
-            User winner = pricingService.getWinner(lotId); // пользователь с балансом >= ставке (самой поздней по дате)
+            if (winner == null) { //если таких пользователей нет, то победителем считается создатель лота
+                winner = lot.getCreator();
+            }
 
             //перевод денег с баланса победителя торгов на баланс создателя лота
-            if(!winner.equals(lot.getCreator())) // если создатель и победитель не один и тот же пользователь
+            if (!winner.equals(lot.getCreator())) // если создатель и победитель не один и тот же пользователь
                 exchangeService.sendMoney(winner, lot.getCreator(), lot.getFinalBet());
 
-            sendMessageToWinner(winner, lot);
-            sendMessageToCreator(lot.getCreator(), winner, lot);
+            sendMessageToWinner(winner, lot, resourceBundle.getString("message.toWinner"));
+
+            sendMessageToCreator(lot,
+                    resourceBundle.getString("message.toCreatorIfSuccess"),
+                    resourceBundle.getString("subject.toCreatorIfSuccess")
+            );
+
+            sendMessageToSubscribers(lot, resourceBundle.getString("message.toSubscriber"));
+
+            subscriptionService.removeAllSubscribers(lot.getId()); // удаление всех подписчиков
         }
     }
 
-    private void sendMessageToWinner(User winner, Lot lot) {
-        String messageToWinner = String.format(
-                "Здравствуйте, %s !\n" +
-                        "Вы выиграли торги за лот \"%s\"\n" +
-                        "---тут находится инструкция для получения лота---\n" +
-                        "1) ...\n" +
-                        "2) ...\n" +
-                        "3) ...\n" +
-                        "4) ...\n" +
-                        "5) ...\n",
+    private void sendMessageToWinner(User winner, Lot lot, String message) {
+        String subject = resourceBundle.getString("subject.toWinner");
+
+        message = String.format(message,
                 winner.getUsername(),
                 lot.getName()
         );
-        mailSender.send(winner.getEmail(), "Вы выиграли торги", messageToWinner);
+
+        mailSender.send(winner.getEmail(), subject, message);
     }
 
-    private void sendMessageToCreator(User creator, User winner, Lot lot) {
-        String messageToCreator = String.format(
-                "Здравствуйте, %s !\n" +
-                        "Торги за ваш лот \"%s\"  выиграны пользователем %s\n",
-                creator.getUsername(),
-                lot.getName(),
-                winner.getUsername()
+    private void sendMessageToCreator(Lot lot, String message, String subject) {
+
+        message = String.format(message,
+                lot.getCreator().getUsername(),
+                lot.getName()
         );
-        mailSender.send(lot.getCreator().getEmail(), "Торги за ваш лот завершены", messageToCreator);
+        mailSender.send(lot.getCreator().getEmail(), subject, message);
+    }
+
+    private void sendMessageToCreator(Lot lot, String message, String subject, String reason) {
+
+        message = String.format(message,
+                lot.getCreator().getUsername(),
+                lot.getName(),
+                reason
+        );
+        mailSender.send(lot.getCreator().getEmail(), subject, message);
+    }
+
+    private void sendMessageToSubscribers(Lot lot, String message) {
+        String subject = resourceBundle.getString("subject.toSubscriber");
+
+        List<User> subscribers = subscriptionService.getAllSubscribersFor(lot.getId());
+
+        for (User sub : subscribers) {
+            message = String.format(message,
+                    sub.getUsername(),
+                    lot.getName(),
+                    lot.getStatus().equals(Status.FINISHED.name()) ? "завершен" : "отменен"
+            );
+            mailSender.send(sub.getEmail(), subject, message);
+        }
     }
 
     public void cancelLot(Lot lot, String reason) {
@@ -198,21 +227,15 @@ public class LotService {
         lot.setEndTime(new Date());
         lotRepo.save(lot);
 
-        String emailTo = lot.getCreator().getEmail();
-        String subject = "Отмена аукциона";
-
-        String message = String.format(
-                "Здравствуйте, %s \n" +
-                        "торги за лот \"%s\" отменены\n",
-                lot.getCreator().getUsername(),
-                lot.getName()
+        sendMessageToCreator(lot,
+                resourceBundle.getString("message.toCreatorIfCanceled"),
+                resourceBundle.getString("subject.toCreatorIfCanceled"),
+                reason // причина отмены лота
         );
 
-        if (!Strings.isNullOrEmpty(reason) && !reason.isBlank()) {
-            message = message + "Причина отмены: " + reason;
-        }
+        // отправка писем всем подписчикам лота об изменении его статуса
+        sendMessageToSubscribers(lot, resourceBundle.getString("message.toSubscriber"));
 
-        mailSender.send(emailTo, subject, message);
+        subscriptionService.removeAllSubscribers(lot.getId()); // удаление всех подписчиков
     }
-
 }

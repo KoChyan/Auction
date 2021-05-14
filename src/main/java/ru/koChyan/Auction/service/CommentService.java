@@ -19,7 +19,6 @@ public class CommentService {
 
 
     public void addComment(Comment comment, Lot lot, User author){
-
         comment.setAuthor(author);
         comment.setLot(lot);
         comment.setDate(new Date());

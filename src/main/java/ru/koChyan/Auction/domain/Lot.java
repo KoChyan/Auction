@@ -24,14 +24,14 @@ public class Lot {
     private Integer timeStep;
     private Long initialBet;
     private Long finalBet;
-    private String filename;  //название файла(фотографии)
+    private String filename;  // название файла (фотографии)
     private String status;
 
     @ManyToMany
     @JoinTable(
             name = "subscription",
-            joinColumns = {@JoinColumn(name = "subscriber_id")},
-            inverseJoinColumns = {@JoinColumn(name = "lot_id")}
+            joinColumns = @JoinColumn(name = "lot_id"),
+            inverseJoinColumns = @JoinColumn(name = "subscriber_id")
     )
     private Set<User> subscribers = new HashSet<>();
 
@@ -131,7 +131,25 @@ public class Lot {
         return subscribers;
     }
 
-    public void setSubscribers(Set<User> subscribers) {
+    private void setSubscribers(Set<User> subscribers) {
         this.subscribers = subscribers;
+    }
+
+    public boolean isSubscriber(User user){
+        return subscribers.contains(user);
+    }
+
+    public void removeAllSubscribers(){
+        subscribers.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "Lot{" +
+                "id=" + id +
+                ", creator=" + creator +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

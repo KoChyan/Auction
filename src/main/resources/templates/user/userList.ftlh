@@ -1,8 +1,10 @@
 <#import "../parts/common.ftlh" as c>
 <#import "/spring.ftl" as spring>
+<#import "../parts/pager.ftlh" as p>
+
 <@c.page>
     <h3 class="m-5 fw-bold"><@spring.message "userList"/></h3>
-
+    <@p.pager url 5 10 15 20 page />
     <div class="container m-3">
         <div class="row my-3">
             <div class="col-sm-3">
@@ -16,7 +18,7 @@
             </div>
             <div class="col-sm-2"></div>
         </div>
-        <#list users as user>
+        <#list page.content as user>
             <div class="row my-3">
                 <div class="col-sm-3">
                     ${user.getUsername()}

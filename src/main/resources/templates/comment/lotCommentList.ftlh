@@ -45,32 +45,34 @@
                 </div>
             </div>
             </#list>
-            <form method="post">
-                <div class="form-group row my-4">
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control ${(textError??)?string('is-invalid', '')} "
-                               placeholder="<@spring.message 'form.placeholder.text'/>"
-                               id="inputText"
-                               value="<#if comment??>${comment.getText()!''}</#if>" aria-label="With textarea"
-                               name="text">
-                        <#if textError??>
-                            <#list textError as textEr>
-                                <div class="invalid-feedback">
-                                    ${textEr}
-                                </div>
-                            </#list>
-                        </#if>
-                    </div>
+            <#if isUser>
+                <form method="post">
+                    <div class="form-group row my-4">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control ${(textError??)?string('is-invalid', '')} "
+                                   placeholder="<@spring.message 'form.placeholder.text'/>"
+                                   id="inputText"
+                                   value="<#if comment??>${comment.getText()!''}</#if>" aria-label="With textarea"
+                                   name="text">
+                            <#if textError??>
+                                <#list textError as textEr>
+                                    <div class="invalid-feedback">
+                                        ${textEr}
+                                    </div>
+                                </#list>
+                            </#if>
+                        </div>
 
-                    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
-                    <div class="col-sm-3">
-                        <button type="submit" class="btn btn-outline-secondary px-2 mx-2">
-                            <@spring.message "button.addComment"/>
-                        </button>
+                        <div class="col-sm-3">
+                            <button type="submit" class="btn btn-outline-secondary px-2 mx-2">
+                                <@spring.message "button.addComment"/>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </#if>
             </p>
         </div>
     </div>
