@@ -100,7 +100,7 @@
                 </label>
                 <div class="custom-file col-sm-6">
                     <label class="custom-file-label" for="inputFile"></label>
-                    <input class="form-control form-control-sm" id="formFileSm" type="file" name="file"/>
+                    <input class="form-control form-control-sm" id="formFileSm" type="file" accept=".png, .jpg, .jpeg" name="file"/>
                 </div>
             </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>

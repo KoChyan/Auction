@@ -99,7 +99,7 @@ public class LotService {
                 Thumbnails.of(uploadPath + File.separator + resultFilename)
                         .size(300, 300)
                         .outputQuality(0.85)
-                        .toFile(uploadPath + File.separator + "resized" + File.separator + "300PX_" + resultFilename);
+                        .toFile(uploadPath + File.separator + "300PX_" + resultFilename);
 
             } catch (IOException e) {
                 e.printStackTrace();

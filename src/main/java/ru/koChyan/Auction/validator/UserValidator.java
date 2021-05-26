@@ -35,24 +35,28 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object obj, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "username.empty", resourceBundle.getString("error.empty"));
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.empty", resourceBundle.getString("error.empty"));
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "email.empty", resourceBundle.getString("error.empty"));
 
         UserDto userDto = (UserDto) obj;
 
-        validateUsername(userDto, errors);
+        if (userDto.getUsername() != null) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "username.empty", resourceBundle.getString("error.empty"));
+            validateUsername(userDto, errors);
+        }
 
-        if(userDto.getEmail() != null)
+        if (userDto.getEmail() != null) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "email.empty", resourceBundle.getString("error.empty"));
             validateEmail(userDto, errors);
+        }
 
-        if(userDto.getPassword() != null)
+        if (userDto.getPassword() != null) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.empty", resourceBundle.getString("error.empty"));
             validatePassword(userDto, errors);
+        }
 
-        if(userDto.getNewEmail() != null && !userDto.getNewEmail().isBlank())
+        if (userDto.getNewEmail() != null && !userDto.getNewEmail().isBlank())
             validateNewEmail(userDto, errors);
 
-        if(userDto.getNewPassword() != null && !userDto.getNewPassword().isBlank())
+        if (userDto.getNewPassword() != null && !userDto.getNewPassword().isBlank())
             validateNewPassword(userDto, errors);
     }
 

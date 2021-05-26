@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -32,11 +33,11 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/img/**")
-                .addResourceLocations("file://" + uploadPath + "/");
+                .addResourceLocations("file://" + uploadPath + File.separator);
 
         //classpath означает, что поиск будет не во всей файловой системе, а только в дереве проекта
         registry.addResourceHandler("static/**")
-                .addResourceLocations("classpath:/static/");
+                .addResourceLocations("classpath:/static" + File.separator);
     }
 
     @Bean

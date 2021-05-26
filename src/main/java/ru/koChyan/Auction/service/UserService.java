@@ -40,12 +40,12 @@ public class UserService implements UserDetailsService {
         User user = userRepo.findByUsername(s);
 
         if (user == null)
-            throw new UsernameNotFoundException("Такой пользователь не найден");
+            throw new UsernameNotFoundException(resourceBundle.getString("usernameNotFoundException"));
 
         return user;
     }
 
-    public boolean addUser(UserDto userDto) {
+    public void addUser(UserDto userDto) {
         // создаем пользователя
         User user = new User();
 
@@ -65,8 +65,6 @@ public class UserService implements UserDetailsService {
 
         // отправляем пользователю код для подтверждения аккаунта
         sendActivationCode(user);
-
-        return true;
     }
 
     private void sendActivationCode(User user) {
@@ -120,19 +118,19 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateProfile(User user, UserDto userFromForm) {
-        // если не null и не из пробелов/пустой
-        boolean isEmailChanged = userFromForm.getNewEmail() != null && !userFromForm.getNewEmail().isBlank();
+
+        boolean isEmailChanged = userFromForm.getNewEmail() != null && !userFromForm.getNewEmail().equals(user.getEmail());
 
         if (isEmailChanged) {
             user.setEmail(userFromForm.getNewEmail());
-
-            //то устанавливаем ему код активации
             user.setActivationCode(UUID.randomUUID().toString());
+
+            user.setActive(false); // станет активен, когда подтвердит новую почту
 
             sendActivationCode(user);
         }
 
-        boolean isPasswordChanged = userFromForm.getNewPassword() != null && !userFromForm.getNewPassword().isBlank();
+        boolean isPasswordChanged = userFromForm.getNewPassword() != null && !userFromForm.getNewPassword().equals(user.getPassword());
 
         if (isPasswordChanged)
             user.setPassword(passwordEncoder.encode(userFromForm.getNewPassword()));

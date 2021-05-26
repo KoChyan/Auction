@@ -4,7 +4,7 @@
 
     <form method="post" action="/user">
 
-        <div class="form-group row my-4">
+        <div class="form-group row my-3">
             <div class="col-form-label col-sm-2">
                 <@spring.message "form.label.username"/>
             </div>

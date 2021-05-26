@@ -14,10 +14,10 @@
                             <@spring.message "field.lot.name"/>: ${lot.getName()!''}
                         </p>
                     </div>
-                    <div class="my-2" id="imgContainer">
-                        <img src="img/resized/300px_${lot.getFilename()!''}" class="card-img-top mx-auto d-block"
+                    <p class="my-2" id="imgContainer">
+                        <img src="img/300PX_${lot.getFilename()!''}" class="card-img-top mx-auto d-block img-fluid"
                              id="lotImg" alt="">
-                    </div>
+                    </p>
                     <div class="card-body p-0">
                         <div class="fw-bold mt-2 text-center">
                             <p>

@@ -1,9 +1,19 @@
 <#import "../parts/common.ftlh" as c>
 <#import "/spring.ftl" as spring>
+<#include "../parts/security.ftlh">
+
 <@c.page>
-    <div class="m-5">
-        <a href="/user/profile/subscriptions"><@spring.message "link.toSubscriptions"/></a>
-    </div>
+    <#if isUser>
+        <div class="m-5">
+            <a href="/user/profile/subscriptions"><@spring.message "link.toSubscriptions"/></a>
+        </div>
+    </#if>
+
+    <#if message??>
+        <div class="m-5">
+            ${message}
+        </div>
+    </#if>
 
     <div class="m-5">
         <h5>${user.getUsername()!''}</h5>
@@ -13,7 +23,6 @@
         <h5><@spring.message "field.user.balance"/>: #{user.getBalance()!''}</h5>
     </div>
     <form method="post" action="/user/profile">
-        <input type="hidden" name="username">
 
         <div class="form-group row my-3">
             <label class="col-sm-2 col-form-label">

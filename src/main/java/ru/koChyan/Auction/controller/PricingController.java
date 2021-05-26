@@ -111,7 +111,7 @@ public class PricingController {
     public void getStatus(String responseJson) {
         LotStatusResponseDto lotStatusResponseDto = new Gson().fromJson(responseJson, LotStatusResponseDto.class);
 
-        if (lotStatusResponseDto.getStatus().toUpperCase().equals("FINISHED")) {
+        if (lotStatusResponseDto.getStatus().toUpperCase().equals(Status.FINISHED.name())) {
             lotService.finish(lotStatusResponseDto.getId());
         }
     }

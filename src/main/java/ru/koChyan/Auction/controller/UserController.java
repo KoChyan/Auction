@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 
 @Controller
@@ -40,6 +41,9 @@ public class UserController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private ResourceBundle resourceBundle;
 
     @InitBinder("userDto")
     protected void initBinder(WebDataBinder binder) {
@@ -101,18 +105,18 @@ public class UserController {
             @Valid UserDto userFromForm,
             BindingResult bindingResult
     ) {
-
         if (bindingResult.hasErrors()) {
             Map<String, List<String>> errors = ControllerUtils.getErrors(bindingResult);
 
-            model.addAttribute("user", user);
             model.mergeAttributes(errors);
-            return "user/profile";
         } else {
 
+            model.addAttribute("message", resourceBundle.getString("message.followLinkInEmail"));
             userService.updateProfile(user, userFromForm);
-            return "redirect:/user/profile";
         }
+
+        model.addAttribute("user", user);
+        return "user/profile";
     }
 
     @PreAuthorize("hasAuthority('USER')")
